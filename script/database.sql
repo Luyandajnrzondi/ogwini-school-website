@@ -8,23 +8,23 @@ create table public.academic_calendar (
   constraint academic_calendar_pkey primary key (id)
 ) TABLESPACE pg_default;
 
-
-create table public.academic_calendar (
-  id uuid not null default gen_random_uuid (),
-  title text not null,
-  description text null,
-  start_date date null,
-  end_date date null,
-  category text null,
-  constraint academic_calendar_pkey primary key (id)
-) TABLESPACE pg_default;
-
 create table public.academic_departments (
   id uuid not null default gen_random_uuid (),
   department_name text not null,
   description text null,
   head_of_department text null,
   constraint academic_departments_pkey primary key (id)
+) TABLESPACE pg_default;
+
+
+create table public.achievements (
+  id uuid not null default gen_random_uuid (),
+  title text not null,
+  description text null,
+  achievement_date date null,
+  category text null,
+  image_url text null,
+  constraint achievements_pkey primary key (id)
 ) TABLESPACE pg_default;
 
 create table public.admission_applications (
@@ -44,15 +44,16 @@ create table public.admission_applications (
 
 create index IF not exists idx_admission_status on public.admission_applications using btree (status) TABLESPACE pg_default;
 
-create table public.achievements (
+create table public.admission_documents (
   id uuid not null default gen_random_uuid (),
-  title text not null,
-  description text null,
-  achievement_date date null,
-  category text null,
-  image_url text null,
-  constraint achievements_pkey primary key (id)
+  application_id uuid null,
+  document_type text null,
+  file_url text null,
+  uploaded_at timestamp with time zone null default now(),
+  constraint admission_documents_pkey primary key (id),
+  constraint admission_documents_application_id_fkey foreign KEY (application_id) references admission_applications (id) on delete CASCADE
 ) TABLESPACE pg_default;
+
 
 create table public.admissions_information (
   id uuid not null default gen_random_uuid (),
@@ -185,14 +186,6 @@ create table public.homepage_statistics (
   constraint homepage_statistics_pkey primary key (id)
 ) TABLESPACE pg_default;
 
-create table public.homepage_statistics (
-  id uuid not null default gen_random_uuid (),
-  title text not null,
-  value text not null,
-  icon text null,
-  display_order integer null default 0,
-  constraint homepage_statistics_pkey primary key (id)
-) TABLESPACE pg_default;
 
 create table public.leadership_team (
   id uuid not null default gen_random_uuid (),
@@ -225,13 +218,12 @@ create index IF not exists idx_news_articles_slug on public.news_articles using 
 
 create index IF not exists idx_news_articles_published on public.news_articles using btree (published_at) TABLESPACE pg_default;
 
-create table public.newsletter_subscribers (
+create table public.news_categories (
   id uuid not null default gen_random_uuid (),
-  email text not null,
-  subscribed_at timestamp with time zone null default now(),
-  constraint newsletter_subscribers_pkey primary key (id),
-  constraint newsletter_subscribers_email_key unique (email)
+  name text not null,
+  constraint news_categories_pkey primary key (id)
 ) TABLESPACE pg_default;
+
 
 create table public.newsletter_subscribers (
   id uuid not null default gen_random_uuid (),
@@ -257,6 +249,7 @@ create table public.school_information (
   constraint school_information_pkey primary key (id)
 ) TABLESPACE pg_default;
 
+
 create table public.school_information (
   id uuid not null default gen_random_uuid (),
   school_name text null,
@@ -272,6 +265,7 @@ create table public.school_information (
   created_at timestamp with time zone null default now(),
   constraint school_information_pkey primary key (id)
 ) TABLESPACE pg_default;
+
 
 create table public.sports (
   id uuid not null default gen_random_uuid (),
@@ -290,6 +284,17 @@ create table public.student_leaders (
   bio text null,
   year integer null,
   constraint student_leaders_pkey primary key (id)
+) TABLESPACE pg_default;
+
+create table public.subjects (
+  id uuid not null default gen_random_uuid (),
+  department_id uuid null,
+  subject_name text not null,
+  grade_start integer null,
+  grade_end integer null,
+  description text null,
+  constraint subjects_pkey primary key (id),
+  constraint subjects_department_id_fkey foreign KEY (department_id) references academic_departments (id) on delete CASCADE
 ) TABLESPACE pg_default;
 
 create table public.technical_subjects (
@@ -319,14 +324,15 @@ create table public.users (
   constraint users_email_key unique (email)
 ) TABLESPACE pg_default;
 
-create table public.users (
+create table public.workshop_projects (
   id uuid not null default gen_random_uuid (),
-  email text null,
-  full_name text null,
-  role text null default 'staff'::text,
-  created_at timestamp with time zone null default now(),
-  constraint users_pkey primary key (id),
-  constraint users_email_key unique (email)
+  subject_id uuid null,
+  title text not null,
+  description text null,
+  image_url text null,
+  project_date date null,
+  constraint workshop_projects_pkey primary key (id),
+  constraint workshop_projects_subject_id_fkey foreign KEY (subject_id) references technical_subjects (id) on delete CASCADE
 ) TABLESPACE pg_default;
 
 INSERT INTO "public"."subjects" ("id", "department_id", "subject_name", "grade_start", "grade_end", "description") VALUES ('2a65d638-d1e8-4a80-8636-7c13b2510ca0', 'be66bc83-0070-41f7-923b-694b90776b15', 'Accounting', 10, 12, null), ('2d37c643-f5f1-460d-9bbb-f2fcad3da4dc', 'f252f4d4-beae-41c0-9c3b-0ef5f76f53cd', 'Mathematical Literacy', 10, 12, null), ('4618bde0-f88b-411b-a149-880894ec005a', 'be66bc83-0070-41f7-923b-694b90776b15', 'Business Studies', 10, 12, null), ('6cfea1b0-05df-43fe-83ec-949795037fc0', '9b80a3c7-947d-4592-a295-f6d7bc045a0a', 'English
