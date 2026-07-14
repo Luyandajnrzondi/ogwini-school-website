@@ -89,14 +89,15 @@ $('logout-btn').addEventListener('click', async function () {
 });
 
 /* ---------- tabs ---------- */
-document.querySelectorAll('.admin-tab').forEach(function (tab) {
-  tab.addEventListener('click', function () {
-    var name = tab.getAttribute('data-tab');
-    document.querySelectorAll('.admin-tab').forEach(function (t) { t.classList.remove('is-active'); });
-    tab.classList.add('is-active');
-    document.querySelectorAll('.admin-panel').forEach(function (p) { p.classList.remove('is-active'); });
-    $('panel-' + name).classList.add('is-active');
+function activateAdminTab(name) {
+  document.querySelectorAll('.admin-tab').forEach(function (tab) {
+    tab.classList.toggle('is-active', tab.getAttribute('data-tab') === name);
   });
+  document.querySelectorAll('.admin-panel').forEach(function (panel) { panel.classList.remove('is-active'); });
+  $('panel-' + name).classList.add('is-active');
+}
+document.querySelectorAll('.admin-tab').forEach(function (tab) {
+  tab.addEventListener('click', function () { activateAdminTab(tab.getAttribute('data-tab')); });
 });
 
 /* =========================================================
@@ -184,12 +185,15 @@ $('subject-form').addEventListener('submit', async function (e) {
   }
   resetSubjectForm();
   showMsg($('global-msg'), id ? 'Subject updated.' : 'Subject added.', false);
-  loadSubjects();
+  await loadSubjects();
+  await refreshManagedPreviews();
 });
 
 $('subjects-tbody').addEventListener('click', async function (e) {
-  var editId = e.target.getAttribute('data-edit-subject');
-  var delId = e.target.getAttribute('data-del-subject');
+  var editButton = e.target.closest('[data-edit-subject]');
+  var deleteButton = e.target.closest('[data-del-subject]');
+  var editId = editButton && editButton.getAttribute('data-edit-subject');
+  var delId = deleteButton && deleteButton.getAttribute('data-del-subject');
 
   if (editId) {
     var res = await supabase.from('subjects').select('*').eq('id', editId).single();
@@ -212,7 +216,8 @@ $('subjects-tbody').addEventListener('click', async function (e) {
     var del = await supabase.from('subjects').delete().eq('id', delId);
     if (del.error) { showMsg($('subject-error'), del.error.message, true); return; }
     showMsg($('global-msg'), 'Subject deleted.', false);
-    loadSubjects();
+    await loadSubjects();
+    await refreshManagedPreviews();
   }
 });
 
@@ -280,12 +285,15 @@ $('timetable-form').addEventListener('submit', async function (e) {
   }
   resetTimetableForm();
   showMsg($('global-msg'), id ? 'Timetable updated.' : 'Timetable added.', false);
-  loadTimetables();
+  await loadTimetables();
+  await refreshManagedPreviews();
 });
 
 $('timetables-tbody').addEventListener('click', async function (e) {
-  var editId = e.target.getAttribute('data-edit-timetable');
-  var delId = e.target.getAttribute('data-del-timetable');
+  var editButton = e.target.closest('[data-edit-timetable]');
+  var deleteButton = e.target.closest('[data-del-timetable]');
+  var editId = editButton && editButton.getAttribute('data-edit-timetable');
+  var delId = deleteButton && deleteButton.getAttribute('data-del-timetable');
 
   if (editId) {
     var res = await supabase.from('timetables').select('*').eq('id', editId).single();
@@ -305,7 +313,8 @@ $('timetables-tbody').addEventListener('click', async function (e) {
     var del = await supabase.from('timetables').delete().eq('id', delId);
     if (del.error) { showMsg($('timetable-error'), del.error.message, true); return; }
     showMsg($('global-msg'), 'Timetable deleted.', false);
-    loadTimetables();
+    await loadTimetables();
+    await refreshManagedPreviews();
   }
 });
 
@@ -431,10 +440,18 @@ function editManagedContent(id) {
   $('content-cancel').hidden = Boolean(config.singleton);
 }
 
+async function refreshManagedPreviews() {
+  previewLoaded = false;
+  await loadPreviewDashboard(true);
+  if (!$('admin-split-preview').hidden) loadSplitPreview();
+  if ($('preview-dialog').open) openPreview(sitePages[activePageIndex].key);
+}
+
 async function saveManagedContent(event) {
   event.preventDefault();
   var table = $('content-type').value;
   var config = contentConfigs[table];
+  var submit = $('content-submit');
   var payload = {};
   config.fields.forEach(function (field) {
     var input = $(inputId(field[0]));
@@ -444,22 +461,42 @@ async function saveManagedContent(event) {
     else payload[field[0]] = input.value.trim() || null;
   });
   var id = $('content-id').value;
+  submit.disabled = true;
+  submit.textContent = id ? 'Saving changes…' : 'Adding content…';
+  $('content-error').hidden = true;
   var result = id ? await supabase.from(table).update(payload).eq('id', id) : await supabase.from(table).insert(payload);
-  if (result.error) { showMsg($('content-error'), result.error.message, true); return; }
+  submit.disabled = false;
+  if (result.error) {
+    submit.textContent = id ? 'Save changes' : 'Add content';
+    showMsg($('content-error'), result.error.message, true);
+    return;
+  }
   showMsg($('global-msg'), id ? 'Content updated.' : 'Content added.', false);
-  loadContentManager();
+  await loadContentManager();
+  await refreshManagedPreviews();
 }
 
 async function handleContentAction(event) {
-  var editId = event.target.getAttribute('data-content-edit');
-  var deleteId = event.target.getAttribute('data-content-delete');
-  if (editId) editManagedContent(editId);
-  if (deleteId) {
+  var editButton = event.target.closest('[data-content-edit]');
+  var deleteButton = event.target.closest('[data-content-delete]');
+  if (editButton) {
+    editManagedContent(editButton.getAttribute('data-content-edit'));
+    $('content-form').scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+  if (deleteButton) {
     if (!window.confirm('Delete this content record? This cannot be undone.')) return;
-    var result = await supabase.from($('content-type').value).delete().eq('id', deleteId);
-    if (result.error) { showMsg($('content-error'), result.error.message, true); return; }
+    deleteButton.disabled = true;
+    deleteButton.textContent = 'Deleting…';
+    var result = await supabase.from($('content-type').value).delete().eq('id', deleteButton.getAttribute('data-content-delete'));
+    if (result.error) {
+      deleteButton.disabled = false;
+      deleteButton.textContent = 'Delete';
+      showMsg($('content-error'), result.error.message, true);
+      return;
+    }
     showMsg($('global-msg'), 'Content deleted.', false);
-    loadContentManager();
+    await loadContentManager();
+    await refreshManagedPreviews();
   }
 }
 
@@ -547,14 +584,14 @@ function renderPreviewDashboard(query) {
   $('preview-updated').textContent = 'Content check completed ' + new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
   $('preview-pages').innerHTML = matched.length ? matched.map(function (page) {
     var health = pageHealth(page);
-    return '<article class="preview-page-card"><div class="preview-page-card__top"><span class="preview-page-index">' + String(sitePages.indexOf(page) + 1).padStart(2, '0') + '</span><span class="preview-status preview-status--' + health.status.toLowerCase() + '">' + health.status + '</span></div><h3>' + esc(page.name) + '</h3><p>/' + esc(page.route) + '</p><dl><div><dt>Records</dt><dd>' + health.rows + '</dd></div><div><dt>Updated</dt><dd>' + esc(latestDate(page)) + '</dd></div></dl>' + (health.issues.length ? '<p class="preview-issue">' + esc(health.issues.join(' · ')) + '</p>' : '<p class="preview-good">No content issues detected</p>') + '<div class="admin-actions"><button class="btn btn--primary btn--sm" data-open-preview="' + page.key + '">Preview</button><a class="btn btn--outline btn--sm" href="' + esc(page.route) + '" target="_blank" rel="noopener">Live page</a></div></article>';
+    return '<article class="preview-page-card"><div class="preview-page-card__top"><span class="preview-page-index">' + String(sitePages.indexOf(page) + 1).padStart(2, '0') + '</span><span class="preview-status preview-status--' + health.status.toLowerCase() + '">' + health.status + '</span></div><h3>' + esc(page.name) + '</h3><p>/' + esc(page.route) + '</p><dl><div><dt>Records</dt><dd>' + health.rows + '</dd></div><div><dt>Updated</dt><dd>' + esc(latestDate(page)) + '</dd></div></dl>' + (health.issues.length ? '<p class="preview-issue">' + esc(health.issues.join(' · ')) + '</p>' : '<p class="preview-good">No content issues detected</p>') + '<div class="admin-actions preview-card-actions"><button class="btn btn--primary btn--sm" data-open-preview="' + page.key + '">Preview</button><button class="btn btn--outline btn--sm" data-manage-page="' + page.key + '">Manage</button><button class="btn btn--outline btn--sm" data-add-page="' + page.key + '">Add</button><a class="btn btn--outline btn--sm" href="' + esc(page.route) + '" target="_blank" rel="noopener">Live</a></div></article>';
   }).join('') : '<div class="admin-card preview-empty"><h3>No matching pages</h3><p>Try a page name, section, article, event, or subject.</p></div>';
   $('preview-sitemap').innerHTML = '<div class="sitemap-home">Ogwini CTHS</div><div class="sitemap-branches">' + matched.map(function (page) { return '<button type="button" data-open-preview="' + page.key + '"><strong>' + esc(page.name) + '</strong><span>' + page.tables.length + ' content sources</span></button>'; }).join('') + '</div>';
 }
 
 function previewMetaHtml(page) {
   var health = pageHealth(page);
-  return '<div class="preview-meta__section"><span class="preview-status preview-status--' + health.status.toLowerCase() + '">' + health.status + '</span><h3>Page details</h3><dl><div><dt>Route</dt><dd>/' + esc(page.route) + '</dd></div><div><dt>Managed records</dt><dd>' + health.rows + '</dd></div><div><dt>Last updated</dt><dd>' + esc(latestDate(page)) + '</dd></div><div><dt>Hidden records</dt><dd>' + health.hidden + '</dd></div></dl></div><div class="preview-meta__section"><h3>Content sources</h3><ul>' + page.tables.map(function (table) { return '<li><span>' + esc((contentConfigs[table] && contentConfigs[table].label) || table.replace(/_/g, ' ')) + '</span><strong>' + (pageRecords[table] || []).length + '</strong></li>'; }).join('') + '</ul></div><div class="preview-meta__section"><h3>Health notes</h3><p>' + esc(health.issues.length ? health.issues.join('. ') : 'All available managed content checks passed.') + '</p></div>';
+  return '<div class="preview-meta__section"><span class="preview-status preview-status--' + health.status.toLowerCase() + '">' + health.status + '</span><h3>Page details</h3><dl><div><dt>Route</dt><dd>/' + esc(page.route) + '</dd></div><div><dt>Managed records</dt><dd>' + health.rows + '</dd></div><div><dt>Last updated</dt><dd>' + esc(latestDate(page)) + '</dd></div><div><dt>Hidden records</dt><dd>' + health.hidden + '</dd></div></dl></div><div class="preview-meta__section"><h3>Edit page sections</h3><div class="preview-section-actions">' + page.tables.map(function (table) { return '<button type="button" class="preview-section-button" data-manage-table="' + esc(table) + '" data-manage-page="' + page.key + '"><span>' + esc((contentConfigs[table] && contentConfigs[table].label) || table.replace(/_/g, ' ')) + '</span><strong>' + (pageRecords[table] || []).length + '</strong></button>'; }).join('') + '</div></div><div class="preview-meta__section"><h3>Health notes</h3><p>' + esc(health.issues.length ? health.issues.join('. ') : 'All available managed content checks passed.') + '</p></div>';
 }
 
 function openPreview(key) {
@@ -570,6 +607,53 @@ function openPreview(key) {
 }
 function navigatePreview(direction) { activePageIndex = (activePageIndex + direction + sitePages.length) % sitePages.length; openPreview(sitePages[activePageIndex].key); }
 function closePreview() { $('preview-dialog').close(); if (lastPreviewFocus) lastPreviewFocus.focus(); }
+
+function preferredPageTable(page, addNew) {
+  var editable = page.tables.filter(function (table) { return table === 'subjects' || table === 'timetables' || Boolean(contentConfigs[table]); });
+  if (!addNew) return editable[0];
+  return editable.find(function (table) {
+    if (table === 'subjects' || table === 'timetables') return true;
+    return !contentConfigs[table].singleton && !contentConfigs[table].updateOnly;
+  }) || editable[0];
+}
+
+async function managePageContent(pageKey, table, addNew) {
+  var page = pageByKey(pageKey);
+  table = table || preferredPageTable(page, addNew);
+  if (!table) {
+    showMsg($('global-msg'), 'This page does not have an editable content section.', true);
+    return;
+  }
+  if ($('preview-dialog').open) $('preview-dialog').close();
+  $('admin-manage-context').hidden = false;
+  $('admin-manage-page').textContent = page.name;
+  $('admin-manage-context').setAttribute('data-page-key', page.key);
+  if (table === 'subjects') {
+    activateAdminTab('subjects');
+    if (addNew) resetSubjectForm();
+    $('subject-form').scrollIntoView({ behavior: 'smooth', block: 'start' });
+    return;
+  }
+  if (table === 'timetables') {
+    activateAdminTab('timetables');
+    if (addNew) resetTimetableForm();
+    $('timetable-form').scrollIntoView({ behavior: 'smooth', block: 'start' });
+    return;
+  }
+  activateAdminTab('content');
+  $('content-type').value = table;
+  await loadContentManager();
+  if (addNew && !contentConfigs[table].singleton && !contentConfigs[table].updateOnly) resetContentForm();
+  var split = $('admin-split-preview');
+  if (split.hidden) {
+    split.hidden = false;
+    $('split-preview-btn').setAttribute('aria-pressed', 'true');
+    $('split-preview-btn').textContent = 'Close preview';
+    $('admin-editor-layout').classList.add('is-split');
+  }
+  loadSplitPreview();
+  $('content-form').scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
 
 function updateRelatedPageControls(table) {
   var page = pageByKey(tablePageMap[table]);
@@ -604,8 +688,19 @@ function patchDraftPreview() {
   });
 }
 
-$('preview-pages').addEventListener('click', function (event) { var key = event.target.closest('[data-open-preview]'); if (key) openPreview(key.getAttribute('data-open-preview')); });
+$('preview-pages').addEventListener('click', function (event) {
+  var previewButton = event.target.closest('[data-open-preview]');
+  var manageButton = event.target.closest('[data-manage-page]');
+  var addButton = event.target.closest('[data-add-page]');
+  if (previewButton) openPreview(previewButton.getAttribute('data-open-preview'));
+  else if (addButton) managePageContent(addButton.getAttribute('data-add-page'), null, true);
+  else if (manageButton) managePageContent(manageButton.getAttribute('data-manage-page'));
+});
 $('preview-sitemap').addEventListener('click', function (event) { var key = event.target.closest('[data-open-preview]'); if (key) openPreview(key.getAttribute('data-open-preview')); });
+$('preview-meta').addEventListener('click', function (event) {
+  var button = event.target.closest('[data-manage-table]');
+  if (button) managePageContent(button.getAttribute('data-manage-page'), button.getAttribute('data-manage-table'));
+});
 $('preview-search').addEventListener('input', function () { renderPreviewDashboard(this.value); });
 document.querySelectorAll('[data-preview-view]').forEach(function (button) { button.addEventListener('click', function () { document.querySelectorAll('[data-preview-view]').forEach(function (item) { item.classList.remove('is-active'); }); button.classList.add('is-active'); var map = button.getAttribute('data-preview-view') === 'map'; $('preview-pages').hidden = map; $('preview-sitemap').hidden = !map; }); });
 $('preview-close').addEventListener('click', closePreview);
@@ -613,7 +708,14 @@ $('preview-dialog').addEventListener('click', function (event) { if (event.targe
 $('preview-frame').addEventListener('load', function () { $('preview-loading').hidden = true; });
 $('preview-prev').addEventListener('click', function () { navigatePreview(-1); });
 $('preview-next').addEventListener('click', function () { navigatePreview(1); });
-$('preview-refresh').addEventListener('click', function () { previewLoaded = false; loadPreviewDashboard(true); openPreview(sitePages[activePageIndex].key); });
+$('preview-refresh').addEventListener('click', async function () { previewLoaded = false; await loadPreviewDashboard(true); openPreview(sitePages[activePageIndex].key); });
+$('preview-manage').addEventListener('click', function () { managePageContent(sitePages[activePageIndex].key); });
+$('return-to-preview').addEventListener('click', function () {
+  var key = $('admin-manage-context').getAttribute('data-page-key') || 'home';
+  $('admin-manage-context').hidden = true;
+  activateAdminTab('preview');
+  openPreview(key);
+});
 document.querySelectorAll('[data-device]').forEach(function (button) { button.addEventListener('click', function () { document.querySelectorAll('[data-device]').forEach(function (item) { item.classList.remove('is-active'); }); button.classList.add('is-active'); $('preview-frame').style.width = button.getAttribute('data-device') + 'px'; }); });
 $('related-page-btn').addEventListener('click', function () { openPreview(this.getAttribute('data-related-page')); });
 $('split-preview-btn').addEventListener('click', function () { var panel = $('admin-split-preview'); panel.hidden = !panel.hidden; this.setAttribute('aria-pressed', String(!panel.hidden)); this.textContent = panel.hidden ? 'Split preview' : 'Close preview'; $('admin-editor-layout').classList.toggle('is-split', !panel.hidden); if (!panel.hidden) loadSplitPreview(); else $('draft-preview-note').hidden = true; });

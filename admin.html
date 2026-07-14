@@ -52,6 +52,10 @@
   </div>
 
   <div class="admin-msg admin-msg--success" id="global-msg" hidden></div>
+  <div class="admin-manage-context" id="admin-manage-context" hidden>
+    <div><span class="preview-eyebrow">Editing page</span><strong id="admin-manage-page">Website content</strong></div>
+    <button type="button" class="btn btn--outline btn--sm" id="return-to-preview">Return to page preview</button>
+  </div>
 
   <!-- SUBJECTS PANEL -->
   <section class="admin-panel is-active" id="panel-subjects">
@@ -218,7 +222,10 @@
       <div class="preview-devices" role="group" aria-label="Preview width">
         <button type="button" data-device="1920">Desktop</button><button type="button" data-device="1440" class="is-active">Laptop</button><button type="button" data-device="768">Tablet</button><button type="button" data-device="390">Mobile</button>
       </div>
-      <a class="btn btn--primary btn--sm" id="preview-live-link" target="_blank" rel="noopener">Open live page</a>
+      <div class="preview-primary-actions">
+        <button type="button" class="btn btn--outline btn--sm" id="preview-manage">Manage content</button>
+        <a class="btn btn--primary btn--sm" id="preview-live-link" target="_blank" rel="noopener">Open live page</a>
+      </div>
     </div>
     <div class="preview-dialog__body">
       <div class="preview-canvas">

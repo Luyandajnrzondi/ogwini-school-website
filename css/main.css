@@ -1334,6 +1334,10 @@ a.timetable-item:hover {
   display: flex; align-items: center; justify-content: space-between; gap: 1rem;
 }
 .admin-card__heading h3 { margin-bottom: 0; }
+.admin-manage-context { display: flex; align-items: center; justify-content: space-between; gap: 1rem; padding: 0.9rem 1rem; margin-bottom: 1rem; background: var(--forest-ink); color: var(--white); border-radius: var(--radius-sm); }
+.admin-manage-context[hidden] { display: none; }
+.admin-manage-context strong { display: block; margin-top: 0.15rem; }
+.admin-manage-context .btn { color: var(--white); border-color: rgba(255,255,255,0.5); }
 .admin-draft-note { margin: 1rem 0 0; padding: 0.7rem 0.85rem; color: var(--forest-ink); background: var(--forest-tint); border-left: 3px solid var(--green-forest); font-size: 0.84rem; }
 .admin-editor-layout.is-split { display: grid; grid-template-columns: minmax(280px, 0.82fr) minmax(360px, 1.18fr); gap: 1.2rem; margin-top: 1.2rem; }
 .admin-split-preview { min-width: 0; overflow: hidden; border: 1px solid var(--line); border-radius: var(--radius-sm); background: var(--ivory); }
@@ -1368,6 +1372,14 @@ a.timetable-item:hover {
 .preview-page-card dt, .preview-meta dt { color: var(--slate); font-size: 0.76rem; }
 .preview-page-card dd, .preview-meta dd { margin: 0; color: var(--charcoal); font-size: 0.76rem; font-weight: 700; text-align: right; }
 .preview-page-card .admin-actions { margin-top: auto; padding-top: 0.7rem; }
+.preview-card-actions { flex-wrap: wrap; }
+.preview-card-actions .btn { flex: 1 1 auto; }
+.preview-primary-actions { display: flex; gap: 0.4rem; }
+.preview-section-actions { display: flex; flex-direction: column; gap: 0.45rem; }
+.preview-section-button { display: flex; align-items: center; justify-content: space-between; gap: 0.7rem; width: 100%; padding: 0.65rem 0.7rem; border: 1px solid var(--line); background: var(--ivory); color: var(--charcoal); font: inherit; text-align: left; }
+.preview-section-button:hover, .preview-section-button:focus-visible { border-color: var(--green-forest); outline: 0; }
+.preview-section-button span { font-size: 0.74rem; }
+.preview-section-button strong { color: var(--green-forest); font-size: 0.75rem; }
 .preview-status { display: inline-flex; align-items: center; width: fit-content; padding: 0.28rem 0.55rem; border-radius: 99px; font-size: 0.68rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.05em; }
 .preview-status--healthy, .preview-good { color: var(--green-forest); background: var(--forest-tint); }
 .preview-status--review, .preview-issue { color: var(--gold-ink); background: rgba(229,193,0,0.16); }
@@ -1416,5 +1428,7 @@ a.timetable-item:hover {
   .preview-pages, .sitemap-branches { grid-template-columns: 1fr; }
   .preview-dialog__toolbar { align-items: stretch; }
   .preview-nav-actions, .preview-devices { overflow-x: auto; }
+  .preview-primary-actions, .admin-manage-context { align-items: stretch; flex-direction: column; }
+  .preview-primary-actions .btn, .admin-manage-context .btn { text-align: center; }
   .preview-dialog__toolbar > .btn { text-align: center; }
 }
