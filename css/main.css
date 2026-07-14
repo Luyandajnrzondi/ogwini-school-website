@@ -1222,6 +1222,7 @@ a.timetable-item:hover {
 .admin-topbar .nav__crest { background: var(--gold); color: var(--forest-ink); }
 .admin-topbar__brand { display: flex; align-items: center; gap: 0.7rem; }
 .admin-user { display: flex; align-items: center; gap: 1rem; font-size: 0.9rem; }
+.admin-user[hidden] { display: none !important; }
 
 /* Login */
 .admin-login {

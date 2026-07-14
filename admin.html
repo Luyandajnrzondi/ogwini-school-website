@@ -47,6 +47,7 @@
   <div class="admin-tabs" role="tablist">
     <button class="admin-tab is-active" data-tab="subjects" role="tab">Subjects</button>
     <button class="admin-tab" data-tab="timetables" role="tab">Timetables</button>
+    <button class="admin-tab" data-tab="content" role="tab">All site content</button>
   </div>
 
   <div class="admin-msg admin-msg--success" id="global-msg" hidden></div>
@@ -134,6 +135,34 @@
           <tr><td colspan="3" class="admin-empty">Loading&hellip;</td></tr>
         </tbody>
       </table>
+    </div>
+  </section>
+
+  <!-- ALL CONTENT PANEL -->
+  <section class="admin-panel" id="panel-content">
+    <div class="admin-card">
+      <h3>Manage website content</h3>
+      <p>Choose a section to add, update, or remove the content displayed across the public website.</p>
+      <div class="admin-field">
+        <label for="content-type">Content section</label>
+        <select id="content-type"></select>
+      </div>
+    </div>
+    <div class="admin-card">
+      <h3 id="content-form-title">Add content</h3>
+      <div class="admin-msg admin-msg--error" id="content-error" hidden></div>
+      <form id="content-form">
+        <input type="hidden" id="content-id">
+        <div id="content-fields"></div>
+        <div class="admin-actions">
+          <button type="submit" class="btn btn--primary" id="content-submit">Add content</button>
+          <button type="button" class="btn btn--outline" id="content-cancel" hidden>Cancel</button>
+        </div>
+      </form>
+    </div>
+    <div class="admin-card">
+      <h3 id="content-list-title">Existing content</h3>
+      <div id="content-list" aria-live="polite"><p class="admin-empty">Choose a content section.</p></div>
     </div>
   </section>
 </main>

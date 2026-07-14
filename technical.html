@@ -72,37 +72,8 @@
           <h2>Six technical disciplines</h2>
         </div>
       </div>
-      <div class="tech-grid reveal">
-        <div class="tech-card">
-          <span class="tech-card__code">EGD</span>
-          <h3>Engineering Graphics &amp; Design</h3>
-          <p>Technical drawing, orthographic and isometric projection, and CAD fundamentals.</p>
-        </div>
-        <div class="tech-card">
-          <span class="tech-card__code">CIV</span>
-          <h3>Civil Technology</h3>
-          <p>Construction, structural systems, surveying and building science.</p>
-        </div>
-        <div class="tech-card">
-          <span class="tech-card__code">ELEC</span>
-          <h3>Electrical Technology</h3>
-          <p>Circuits, power systems, control logic and safe electrical practice.</p>
-        </div>
-        <div class="tech-card">
-          <span class="tech-card__code">MECH</span>
-          <h3>Mechanical Technology</h3>
-          <p>Machining, fitting, welding and mechanical systems design.</p>
-        </div>
-        <div class="tech-card">
-          <span class="tech-card__code">IT</span>
-          <h3>Information Technology</h3>
-          <p>Programming, systems analysis, databases and software development.</p>
-        </div>
-        <div class="tech-card">
-          <span class="tech-card__code">CAT</span>
-          <h3>Computer Applications Technology</h3>
-          <p>Practical computer literacy, spreadsheets, databases and web basics.</p>
-        </div>
+      <div class="tech-grid reveal" id="technical-subjects" aria-live="polite">
+        <p class="admin-empty">Loading technical subjects&hellip;</p>
       </div>
     </div>
   </section>
@@ -110,14 +81,11 @@
   <!-- WORKSHOPS & PROJECT GALLERY TEASER -->
   <section class="section">
     <div class="container two-col two-col--reverse">
-      <div class="two-col__media reveal">
-        <img src="https://images.unsplash.com/photo-1504328345606-18bbc8c9d7d1?q=80&w=800&auto=format&fit=crop" alt="Learner using equipment in the electrical technology workshop">
-      </div>
+      <div class="two-col__media reveal" id="project-media" hidden></div>
       <div class="reveal">
         <p class="eyebrow">Technical Workshops</p>
         <h2>Where theory becomes practice</h2>
-        <p class="mt-lg">Our Civil, Electrical and Mechanical Technology workshops are equipped with dedicated tools, safety equipment and demonstration stations, giving every learner supervised, hands-on time with real materials.</p>
-        <p>Practical projects &mdash; from wired circuit boards to small structural builds &mdash; form part of every learner's PAT portfolio.</p>
+        <div id="workshop-projects" aria-live="polite"><p class="admin-empty">Loading workshop projects&hellip;</p></div>
         <a href="gallery.html" class="btn btn--outline mt-lg" style="margin-top:1rem;">View Practical Projects Gallery</a>
       </div>
     </div>
@@ -132,23 +100,8 @@
           <h2>Where technical subjects can take you</h2>
         </div>
       </div>
-      <div class="reveal">
-        <div class="pathway-row">
-          <div class="pathway-icon"><svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="2"><rect x="6" y="10" width="36" height="24" rx="1"/><path d="M6 18h36M16 10v8M32 10v8"/><circle cx="24" cy="26" r="4"/></svg></div>
-          <div><p class="pathway-title">Engineering</p><p class="pathway-desc">Mechanical, civil, electrical and industrial engineering study routes.</p></div>
-        </div>
-        <div class="pathway-row">
-          <div class="pathway-icon"><svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="2"><path d="M8 40 40 8M14 40l26-26M8 34l6 6"/></svg></div>
-          <div><p class="pathway-title">Construction</p><p class="pathway-desc">Site management, quantity surveying and structural trades.</p></div>
-        </div>
-        <div class="pathway-row">
-          <div class="pathway-icon"><svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="2"><path d="M24 4v8M24 36v8M4 24h8M36 24h8M9 9l6 6M33 33l6 6M39 9l-6 6M15 33l-6 6"/><circle cx="24" cy="24" r="8"/></svg></div>
-          <div><p class="pathway-title">Electrical Trades</p><p class="pathway-desc">Qualified electrician pathways and power systems careers.</p></div>
-        </div>
-        <div class="pathway-row">
-          <div class="pathway-icon"><svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="2"><rect x="8" y="8" width="32" height="24" rx="2"/><path d="M18 40h12M24 32v8"/></svg></div>
-          <div><p class="pathway-title">ICT Careers</p><p class="pathway-desc">Software development, systems administration and data careers.</p></div>
-        </div>
+      <div class="reveal" id="career-pathways" aria-live="polite">
+        <p class="admin-empty">Loading career pathways&hellip;</p>
       </div>
     </div>
   </section>
@@ -204,5 +157,6 @@
 </footer>
 
 <script src="js/main.js"></script>
+<script type="module" src="js/technical.js"></script>
 </body>
 </html>

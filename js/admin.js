@@ -51,6 +51,7 @@ async function refreshSession() {
     loadDepartments();
     loadSubjects();
     loadTimetables();
+    initializeContentManager();
   } else {
     loginView.hidden = false;
     dashboardView.hidden = true;
@@ -306,6 +307,146 @@ $('timetables-tbody').addEventListener('click', async function (e) {
     loadTimetables();
   }
 });
+
+/* =========================================================
+   GENERIC SITE CONTENT MANAGER
+   ========================================================= */
+var contentConfigs = {
+  homepage_content: { label: 'Home — main content', singleton: true, fields: [['hero_title','Hero title'],['hero_subtitle','Hero subtitle'],['welcome_message','Welcome message','textarea'],['principal_message','Principal message','textarea'],['cta_primary','Primary button'],['cta_primary_link','Primary button link'],['cta_secondary','Secondary button'],['cta_secondary_link','Secondary button link']] },
+  homepage_slides: { label: 'Home — slides', fields: [['title','Title'],['description','Description','textarea'],['image_url','Image URL','url'],['display_order','Display order','number'],['is_active','Active','checkbox']] },
+  homepage_statistics: { label: 'Home — statistics', fields: [['title','Title'],['value','Value'],['icon','Icon name'],['display_order','Display order','number']] },
+  school_information: { label: 'About — school information', singleton: true, fields: [['school_name','School name'],['motto','Motto'],['history','History','textarea'],['vision','Vision','textarea'],['mission','Mission','textarea'],['principal_name','Principal name'],['principal_message','Principal message','textarea'],['school_email','Email','email'],['school_phone','Phone'],['school_address','Address','textarea']] },
+  leadership_team: { label: 'About — leadership team', fields: [['name','Name'],['position','Position'],['photo_url','Photo URL','url'],['email','Email','email'],['bio','Biography','textarea'],['display_order','Display order','number']] },
+  academic_departments: { label: 'Academics — departments', fields: [['department_name','Department name'],['description','Description','textarea'],['head_of_department','Head of department']] },
+  academic_calendar: { label: 'Academics — calendar', fields: [['title','Title'],['description','Description','textarea'],['start_date','Start date','date'],['end_date','End date','date'],['category','Category']] },
+  news_articles: { label: 'Home — news', fields: [['category_id','Category','relation','news_categories','name'],['title','Title'],['slug','Slug'],['summary','Summary','textarea'],['content','Content','textarea'],['featured_image','Featured image URL','url'],['author','Author'],['published_at','Published date','datetime-local'],['is_featured','Featured','checkbox']] },
+  events: { label: 'Home — events', fields: [['title','Title'],['description','Description','textarea'],['event_date','Event date','datetime-local'],['location','Location'],['image_url','Image URL','url'],['registration_required','Registration required','checkbox']] },
+  technical_subjects: { label: 'Technical — subjects', fields: [['subject_name','Subject name'],['description','Description','textarea'],['career_path','Career path','textarea'],['image_url','Image URL','url']] },
+  workshop_projects: { label: 'Technical — workshop projects', fields: [['subject_id','Technical subject','relation','technical_subjects','subject_name'],['title','Title'],['description','Description','textarea'],['image_url','Image URL','url'],['project_date','Project date','date']] },
+  sports: { label: 'Sports — programmes', fields: [['sport_name','Sport name'],['description','Description','textarea'],['coach_name','Coach name'],['image_url','Image URL','url']] },
+  cultural_activities: { label: 'Sports — cultural activities', fields: [['activity_name','Activity name'],['description','Description','textarea'],['facilitator','Facilitator'],['image_url','Image URL','url']] },
+  achievements: { label: 'Sports — achievements', fields: [['title','Title'],['description','Description','textarea'],['achievement_date','Achievement date','date'],['category','Category'],['image_url','Image URL','url']] },
+  fixtures: { label: 'Sports — fixtures and results', fields: [['sport_id','Sport','relation','sports','sport_name'],['opponent','Opponent'],['fixture_date','Fixture date','datetime-local'],['venue','Venue'],['result','Result'],['status','Status']] }
+};
+var contentInitialized = false;
+var currentContentRows = [];
+
+function initializeContentManager() {
+  if (contentInitialized) return;
+  contentInitialized = true;
+  var select = $('content-type');
+  select.innerHTML = Object.keys(contentConfigs).map(function (table) {
+    return '<option value="' + esc(table) + '">' + esc(contentConfigs[table].label) + '</option>';
+  }).join('');
+  select.addEventListener('change', loadContentManager);
+  $('content-form').addEventListener('submit', saveManagedContent);
+  $('content-cancel').addEventListener('click', resetContentForm);
+  $('content-list').addEventListener('click', handleContentAction);
+  loadContentManager();
+}
+
+function inputId(name) { return 'managed-' + name; }
+
+async function renderContentFields(config) {
+  var html = [];
+  for (var i = 0; i < config.fields.length; i += 1) {
+    var field = config.fields[i];
+    var name = field[0], label = field[1], type = field[2] || 'text';
+    var control;
+    if (type === 'textarea') control = '<textarea id="' + inputId(name) + '"></textarea>';
+    else if (type === 'checkbox') control = '<input type="checkbox" id="' + inputId(name) + '">';
+    else if (type === 'relation') {
+      var relation = await supabase.from(field[3]).select('id,' + field[4]).order(field[4]);
+      control = '<select id="' + inputId(name) + '"><option value="">— None —</option>' + (relation.data || []).map(function (item) {
+        return '<option value="' + esc(item.id) + '">' + esc(item[field[4]]) + '</option>';
+      }).join('') + '</select>';
+    } else control = '<input type="' + esc(type) + '" id="' + inputId(name) + '">';
+    html.push('<div class="admin-field"><label for="' + inputId(name) + '">' + esc(label) + '</label>' + control + '</div>');
+  }
+  $('content-fields').innerHTML = html.join('');
+}
+
+async function loadContentManager() {
+  var table = $('content-type').value;
+  var config = contentConfigs[table];
+  resetContentForm();
+  await renderContentFields(config);
+  $('content-list-title').textContent = config.label;
+  var result = await supabase.from(table).select('*').order(config.fields[0][0], { ascending: true });
+  if (result.error) {
+    $('content-list').innerHTML = '<p class="admin-empty">Could not load this content: ' + esc(result.error.message) + '</p>';
+    return;
+  }
+  currentContentRows = result.data || [];
+  if (!currentContentRows.length) {
+    $('content-list').innerHTML = '<p class="admin-empty">No content has been added yet.</p>';
+    return;
+  }
+  $('content-list').innerHTML = currentContentRows.map(function (row) {
+    var title = row[config.fields[0][0]] || 'Content record';
+    return '<div class="achievement-row"><div><h3>' + esc(title) + '</h3><p>' + esc(row[config.fields[1] ? config.fields[1][0] : 'id'] || '') + '</p></div><div class="admin-table__actions"><button class="btn btn--outline btn--sm" data-content-edit="' + esc(row.id) + '">Edit</button><button class="btn btn--danger btn--sm" data-content-delete="' + esc(row.id) + '">Delete</button></div></div>';
+  }).join('');
+  if (config.singleton && currentContentRows[0]) editManagedContent(currentContentRows[0].id);
+}
+
+function resetContentForm() {
+  $('content-id').value = '';
+  $('content-form').reset();
+  var config = contentConfigs[$('content-type').value];
+  $('content-form-title').textContent = config ? 'Add ' + config.label : 'Add content';
+  $('content-submit').textContent = 'Add content';
+  $('content-cancel').hidden = true;
+  $('content-error').hidden = true;
+}
+
+function editManagedContent(id) {
+  var config = contentConfigs[$('content-type').value];
+  var row = currentContentRows.find(function (item) { return item.id === id; });
+  if (!row) return;
+  $('content-id').value = row.id;
+  config.fields.forEach(function (field) {
+    var input = $(inputId(field[0]));
+    if (!input) return;
+    if ((field[2] || '') === 'checkbox') input.checked = Boolean(row[field[0]]);
+    else if ((field[2] || '') === 'datetime-local' && row[field[0]]) input.value = String(row[field[0]]).slice(0, 16);
+    else input.value = row[field[0]] == null ? '' : row[field[0]];
+  });
+  $('content-form-title').textContent = 'Edit ' + config.label;
+  $('content-submit').textContent = 'Save changes';
+  $('content-cancel').hidden = Boolean(config.singleton);
+}
+
+async function saveManagedContent(event) {
+  event.preventDefault();
+  var table = $('content-type').value;
+  var config = contentConfigs[table];
+  var payload = {};
+  config.fields.forEach(function (field) {
+    var input = $(inputId(field[0]));
+    var type = field[2] || 'text';
+    if (type === 'checkbox') payload[field[0]] = input.checked;
+    else if (type === 'number') payload[field[0]] = input.value ? Number(input.value) : null;
+    else payload[field[0]] = input.value.trim() || null;
+  });
+  var id = $('content-id').value;
+  var result = id ? await supabase.from(table).update(payload).eq('id', id) : await supabase.from(table).insert(payload);
+  if (result.error) { showMsg($('content-error'), result.error.message, true); return; }
+  showMsg($('global-msg'), id ? 'Content updated.' : 'Content added.', false);
+  loadContentManager();
+}
+
+async function handleContentAction(event) {
+  var editId = event.target.getAttribute('data-content-edit');
+  var deleteId = event.target.getAttribute('data-content-delete');
+  if (editId) editManagedContent(editId);
+  if (deleteId) {
+    if (!window.confirm('Delete this content record? This cannot be undone.')) return;
+    var result = await supabase.from($('content-type').value).delete().eq('id', deleteId);
+    if (result.error) { showMsg($('content-error'), result.error.message, true); return; }
+    showMsg($('global-msg'), 'Content deleted.', false);
+    loadContentManager();
+  }
+}
 
 /* ---------- init ---------- */
 refreshSession();
