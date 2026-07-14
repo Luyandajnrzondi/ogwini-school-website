@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en" class="admin-body">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Admin — Ogwini Comprehensive Technical High School</title>
+<meta name="robots" content="noindex, nofollow">
+<meta name="description" content="Content administration for Ogwini CTHS.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;0,9..144,700&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/main.css">
+</head>
+<body class="admin-body">
+
+<header class="admin-topbar">
+  <div class="admin-topbar__brand">
+    <span class="nav__crest">OG</span>
+    <h1>Ogwini CTHS — Admin</h1>
+  </div>
+  <div class="admin-user" id="admin-user" hidden>
+    <span id="admin-email"></span>
+    <button class="btn btn--ghost btn--sm" id="logout-btn" style="border-color:rgba(255,255,255,0.55);color:#fff;">Log out</button>
+  </div>
+</header>
+
+<!-- LOGIN -->
+<section class="admin-login" id="login-view">
+  <h2>Administrator sign in</h2>
+  <p>Sign in with your school administrator account to manage academic content.</p>
+  <div class="admin-msg admin-msg--error" id="login-error" hidden></div>
+  <form id="login-form">
+    <div class="admin-field">
+      <label for="login-email">Email</label>
+      <input type="email" id="login-email" autocomplete="email" required>
+    </div>
+    <div class="admin-field">
+      <label for="login-password">Password</label>
+      <input type="password" id="login-password" autocomplete="current-password" required>
+    </div>
+    <button type="submit" class="btn btn--primary btn--block" id="login-submit">Sign in</button>
+  </form>
+</section>
+
+<!-- DASHBOARD -->
+<main class="admin-wrap" id="dashboard-view" hidden>
+  <div class="admin-tabs" role="tablist">
+    <button class="admin-tab is-active" data-tab="subjects" role="tab">Subjects</button>
+    <button class="admin-tab" data-tab="timetables" role="tab">Timetables</button>
+  </div>
+
+  <div class="admin-msg admin-msg--success" id="global-msg" hidden></div>
+
+  <!-- SUBJECTS PANEL -->
+  <section class="admin-panel is-active" id="panel-subjects">
+    <div class="admin-card">
+      <h3 id="subject-form-title">Add subject</h3>
+      <div class="admin-msg admin-msg--error" id="subject-error" hidden></div>
+      <form id="subject-form">
+        <input type="hidden" id="subject-id">
+        <div class="admin-field">
+          <label for="subject-name">Subject name</label>
+          <input type="text" id="subject-name" required>
+        </div>
+        <div class="admin-field">
+          <label for="subject-department">Department</label>
+          <select id="subject-department">
+            <option value="">— No department —</option>
+          </select>
+        </div>
+        <div class="admin-row">
+          <div class="admin-field">
+            <label for="subject-grade-start">Grade start</label>
+            <input type="number" id="subject-grade-start" min="1" max="12">
+          </div>
+          <div class="admin-field">
+            <label for="subject-grade-end">Grade end</label>
+            <input type="number" id="subject-grade-end" min="1" max="12">
+          </div>
+        </div>
+        <div class="admin-field">
+          <label for="subject-description">Description</label>
+          <textarea id="subject-description"></textarea>
+        </div>
+        <div class="admin-actions">
+          <button type="submit" class="btn btn--primary" id="subject-submit">Add subject</button>
+          <button type="button" class="btn btn--outline" id="subject-cancel" hidden>Cancel</button>
+        </div>
+      </form>
+    </div>
+
+    <div class="admin-card">
+      <h3>Existing subjects</h3>
+      <table class="admin-table">
+        <thead>
+          <tr><th>Subject</th><th>Department</th><th>Grades</th><th></th></tr>
+        </thead>
+        <tbody id="subjects-tbody">
+          <tr><td colspan="4" class="admin-empty">Loading&hellip;</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- TIMETABLES PANEL -->
+  <section class="admin-panel" id="panel-timetables">
+    <div class="admin-card">
+      <h3 id="timetable-form-title">Add timetable</h3>
+      <div class="admin-msg admin-msg--error" id="timetable-error" hidden></div>
+      <form id="timetable-form">
+        <input type="hidden" id="timetable-id">
+        <div class="admin-field">
+          <label for="timetable-grade">Grade / label</label>
+          <input type="text" id="timetable-grade" placeholder="e.g. Grade 10 or Exam Timetable" required>
+        </div>
+        <div class="admin-field">
+          <label for="timetable-file">File URL</label>
+          <input type="url" id="timetable-file" placeholder="https://...">
+        </div>
+        <div class="admin-actions">
+          <button type="submit" class="btn btn--primary" id="timetable-submit">Add timetable</button>
+          <button type="button" class="btn btn--outline" id="timetable-cancel" hidden>Cancel</button>
+        </div>
+      </form>
+    </div>
+
+    <div class="admin-card">
+      <h3>Existing timetables</h3>
+      <table class="admin-table">
+        <thead>
+          <tr><th>Grade / label</th><th>File</th><th></th></tr>
+        </thead>
+        <tbody id="timetables-tbody">
+          <tr><td colspan="3" class="admin-empty">Loading&hellip;</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+</main>
+
+<script type="module" src="js/admin.js"></script>
+</body>
+</html>
