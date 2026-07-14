@@ -6,6 +6,7 @@ const lightbox = document.querySelector('.lightbox');
 const esc = (value) => String(value ?? '').replace(/[&<>'"]/g, (character) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' })[character]);
 const slugify = (value) => String(value || 'uncategorised').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
 let currentIndex = 0;
+let lastFocusedItem = null;
 
 function visibleItems() {
   return [...grid.querySelectorAll('.gallery-item:not(.is-hidden)')];
@@ -23,23 +24,32 @@ function showAt(index) {
 
 function closeLightbox() {
   lightbox.classList.remove('is-open');
+  lightbox.setAttribute('aria-hidden', 'true');
   document.body.style.overflow = '';
+  lastFocusedItem?.focus();
 }
 
 function initializeInteractions() {
   filters.addEventListener('click', (event) => {
     const button = event.target.closest('.filter-btn');
     if (!button) return;
-    filters.querySelectorAll('.filter-btn').forEach((item) => item.classList.toggle('is-active', item === button));
+    filters.querySelectorAll('.filter-btn').forEach((item) => {
+      const active = item === button;
+      item.classList.toggle('is-active', active);
+      item.setAttribute('aria-pressed', String(active));
+    });
     grid.querySelectorAll('.gallery-item').forEach((item) => item.classList.toggle('is-hidden', button.dataset.filter !== 'all' && item.dataset.category !== button.dataset.filter));
   });
   grid.addEventListener('click', (event) => {
     const item = event.target.closest('.gallery-item');
     if (!item) return;
+    lastFocusedItem = item;
     currentIndex = visibleItems().indexOf(item);
     showAt(currentIndex);
     lightbox.classList.add('is-open');
+    lightbox.setAttribute('aria-hidden', 'false');
     document.body.style.overflow = 'hidden';
+    lightbox.querySelector('.lightbox__close').focus();
   });
   lightbox.querySelector('.lightbox__close').addEventListener('click', closeLightbox);
   lightbox.querySelector('.lightbox__nav--prev').addEventListener('click', () => showAt(currentIndex - 1));
@@ -62,7 +72,7 @@ async function loadGallery() {
     grid.innerHTML = `<p class="admin-empty">Gallery is temporarily unavailable. ${esc(categoryError?.message || imageError?.message)}</p>`;
     return;
   }
-  filters.innerHTML = '<button class="filter-btn is-active" data-filter="all">All</button>' + (categories || []).map((category) => `<button class="filter-btn" data-filter="${esc(slugify(category.name))}">${esc(category.name)}</button>`).join('');
+  filters.innerHTML = '<button class="filter-btn is-active" data-filter="all" aria-pressed="true">All</button>' + (categories || []).map((category) => `<button class="filter-btn" data-filter="${esc(slugify(category.name))}" aria-pressed="false">${esc(category.name)}</button>`).join('');
   if (!images?.length) {
     grid.innerHTML = '<p class="admin-empty">No gallery images have been published yet.</p>';
     return;

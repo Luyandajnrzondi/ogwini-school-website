@@ -250,23 +250,6 @@ create table public.school_information (
 ) TABLESPACE pg_default;
 
 
-create table public.school_information (
-  id uuid not null default gen_random_uuid (),
-  school_name text null,
-  motto text null,
-  history text null,
-  vision text null,
-  mission text null,
-  principal_name text null,
-  principal_message text null,
-  school_email text null,
-  school_phone text null,
-  school_address text null,
-  created_at timestamp with time zone null default now(),
-  constraint school_information_pkey primary key (id)
-) TABLESPACE pg_default;
-
-
 create table public.sports (
   id uuid not null default gen_random_uuid (),
   sport_name text not null,

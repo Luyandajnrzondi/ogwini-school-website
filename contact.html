@@ -63,16 +63,13 @@
           </div>
           <div class="contact-info-row">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 4h16v16H4z"/><path d="m4 5 8 8 8-8"/></svg>
-            <div><h3>Email Address</h3><p>info@ogwinicths.edu.za</p></div>
+            <div><h3>Email Address</h3><p id="school-email">Loading&hellip;</p></div>
           </div>
           <div class="contact-info-row">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>
-            <div><h3>Physical Address</h3><p>12 Ogwini Road, Umbumbulu, KwaZulu-Natal, 4105</p></div>
+            <div><h3>Physical Address</h3><p id="school-address">Loading&hellip;</p></div>
           </div>
-          <div class="contact-info-row">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg>
-            <div><h3>Office Hours</h3><p>Monday to Friday, 07:30 &ndash; 16:00</p></div>
-          </div>
+
         </div>
 
         <div class="map-frame mt-lg">
@@ -89,7 +86,7 @@
       <div class="reveal">
         <p class="eyebrow">Send A Message</p>
         <h2>Contact form</h2>
-        <div class="form-success" role="status" aria-live="polite"></div>
+        <div class="form-success" id="contact-feedback" role="status" aria-live="polite" hidden></div>
         <form id="contact-form" class="mt-lg" novalidate>
           <div class="form-row">
             <div class="form-field">
@@ -179,5 +176,6 @@
 </footer>
 
 <script src="js/main.js"></script>
+<script type="module" src="js/contact.js"></script>
 </body>
 </html>
