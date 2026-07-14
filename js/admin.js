@@ -319,8 +319,14 @@ var contentConfigs = {
   leadership_team: { label: 'About — leadership team', fields: [['name','Name'],['position','Position'],['photo_url','Photo URL','url'],['email','Email','email'],['bio','Biography','textarea'],['display_order','Display order','number']] },
   academic_departments: { label: 'Academics — departments', fields: [['department_name','Department name'],['description','Description','textarea'],['head_of_department','Head of department']] },
   academic_calendar: { label: 'Academics — calendar', fields: [['title','Title'],['description','Description','textarea'],['start_date','Start date','date'],['end_date','End date','date'],['category','Category']] },
-  news_articles: { label: 'Home — news', fields: [['category_id','Category','relation','news_categories','name'],['title','Title'],['slug','Slug'],['summary','Summary','textarea'],['content','Content','textarea'],['featured_image','Featured image URL','url'],['author','Author'],['published_at','Published date','datetime-local'],['is_featured','Featured','checkbox']] },
-  events: { label: 'Home — events', fields: [['title','Title'],['description','Description','textarea'],['event_date','Event date','datetime-local'],['location','Location'],['image_url','Image URL','url'],['registration_required','Registration required','checkbox']] },
+  news_categories: { label: 'News — categories', fields: [['name','Category name']] },
+  news_articles: { label: 'News — articles', fields: [['category_id','Category','relation','news_categories','name'],['title','Title'],['slug','Slug'],['summary','Summary','textarea'],['content','Content','textarea'],['featured_image','Featured image URL','url'],['author','Author'],['published_at','Published date','datetime-local'],['is_featured','Featured','checkbox']], titleField: 'title', subtitleField: 'summary' },
+  events: { label: 'Events — calendar', fields: [['title','Title'],['description','Description','textarea'],['event_date','Event date','datetime-local'],['location','Location'],['image_url','Image URL','url'],['registration_required','Registration required','checkbox']], titleField: 'title', subtitleField: 'event_date' },
+  gallery_categories: { label: 'Gallery — categories', fields: [['name','Category name']] },
+  gallery_images: { label: 'Gallery — images', fields: [['category_id','Category','relation','gallery_categories','name'],['title','Title'],['image_url','Image URL','url']], titleField: 'title', subtitleField: 'image_url' },
+  admissions_information: { label: 'Admissions — information', singleton: true, fields: [['overview','Overview','textarea'],['requirements','Requirements (separate with commas or new lines)','textarea'],['application_process','Application process (separate steps with new lines)','textarea'],['application_open','Applications open','checkbox'],['application_deadline','Application deadline','date']], titleField: 'overview', subtitleField: 'application_deadline' },
+  downloads: { label: 'Admissions & News — downloads', fields: [['title','Title'],['description','Description','textarea'],['file_url','File URL','url'],['category','Category']], titleField: 'title', subtitleField: 'category' },
+  contact_messages: { label: 'Contact — messages', updateOnly: true, fields: [['is_read','Mark as read','checkbox']], titleField: 'subject', subtitleField: 'message' },
   technical_subjects: { label: 'Technical — subjects', fields: [['subject_name','Subject name'],['description','Description','textarea'],['career_path','Career path','textarea'],['image_url','Image URL','url']] },
   workshop_projects: { label: 'Technical — workshop projects', fields: [['subject_id','Technical subject','relation','technical_subjects','subject_name'],['title','Title'],['description','Description','textarea'],['image_url','Image URL','url'],['project_date','Project date','date']] },
   sports: { label: 'Sports — programmes', fields: [['sport_name','Sport name'],['description','Description','textarea'],['coach_name','Coach name'],['image_url','Image URL','url']] },
@@ -378,13 +384,18 @@ async function loadContentManager() {
     return;
   }
   currentContentRows = result.data || [];
+  $('content-form').hidden = Boolean(config.updateOnly);
   if (!currentContentRows.length) {
     $('content-list').innerHTML = '<p class="admin-empty">No content has been added yet.</p>';
     return;
   }
   $('content-list').innerHTML = currentContentRows.map(function (row) {
-    var title = row[config.fields[0][0]] || 'Content record';
-    return '<div class="achievement-row"><div><h3>' + esc(title) + '</h3><p>' + esc(row[config.fields[1] ? config.fields[1][0] : 'id'] || '') + '</p></div><div class="admin-table__actions"><button class="btn btn--outline btn--sm" data-content-edit="' + esc(row.id) + '">Edit</button><button class="btn btn--danger btn--sm" data-content-delete="' + esc(row.id) + '">Delete</button></div></div>';
+    var title = row[config.titleField || config.fields[0][0]] || (table === 'contact_messages' ? 'General enquiry' : 'Content record');
+    var subtitle = row[config.subtitleField || (config.fields[1] ? config.fields[1][0] : 'id')] || '';
+    var status = table === 'contact_messages' ? (row.is_read ? 'Read · ' : 'Unread · ') : '';
+    if (table === 'contact_messages') subtitle = status + (row.name || 'Unknown sender') + (row.email ? ' · ' + row.email : '') + (row.phone ? ' · ' + row.phone : '') + ' — ' + (row.message || '');
+    else subtitle = status + subtitle;
+    return '<div class="achievement-row"><div><h3>' + esc(title) + '</h3><p>' + esc(subtitle) + '</p></div><div class="admin-table__actions"><button class="btn btn--outline btn--sm" data-content-edit="' + esc(row.id) + '">' + (table === 'contact_messages' ? 'Review' : 'Edit') + '</button><button class="btn btn--danger btn--sm" data-content-delete="' + esc(row.id) + '">Delete</button></div></div>';
   }).join('');
   if (config.singleton && currentContentRows[0]) editManagedContent(currentContentRows[0].id);
 }
@@ -404,6 +415,7 @@ function editManagedContent(id) {
   var row = currentContentRows.find(function (item) { return item.id === id; });
   if (!row) return;
   $('content-id').value = row.id;
+  $('content-form').hidden = false;
   config.fields.forEach(function (field) {
     var input = $(inputId(field[0]));
     if (!input) return;

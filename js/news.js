@@ -1,6 +1,7 @@
 import { supabase } from './supabase-client.js';
 
 const container = document.getElementById('news-articles');
+const downloadsContainer = document.getElementById('news-downloads');
 const esc = (value) => String(value ?? '').replace(/[&<>'"]/g, (character) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' })[character]);
 const formatDate = (value) => value ? new Intl.DateTimeFormat('en-ZA', { day: 'numeric', month: 'long', year: 'numeric' }).format(new Date(value)) : 'Date to be confirmed';
 
@@ -43,4 +44,27 @@ async function loadNews() {
   }
 }
 
-loadNews();
+async function loadDownloads() {
+  const { data, error } = await supabase
+    .from('downloads')
+    .select('id,title,description,file_url,category,uploaded_at')
+    .order('uploaded_at', { ascending: false });
+
+  if (error) {
+    downloadsContainer.innerHTML = '<p class="admin-empty">Notices are temporarily unavailable.</p>';
+    return;
+  }
+  if (!data?.length) {
+    downloadsContainer.innerHTML = '<p class="admin-empty">No notices or newsletters have been published yet.</p>';
+    return;
+  }
+  downloadsContainer.innerHTML = data.map((item) => `<div class="notice-row">
+    <div class="notice-row__meta">
+      <span class="notice-row__type">${esc(item.category || 'Download')}</span>
+      <span><strong>${esc(item.title)}</strong>${item.description ? `<br><small>${esc(item.description)}</small>` : ''}</span>
+    </div>
+    <a href="${esc(item.file_url)}" class="dl-link" target="_blank" rel="noopener">Download</a>
+  </div>`).join('');
+}
+
+Promise.all([loadNews(), loadDownloads()]);
