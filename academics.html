@@ -62,44 +62,8 @@
         </div>
       </div>
 
-      <div class="mt-lg" style="margin-top:3.5rem;">
-        <div class="subject-department reveal">
-          <div class="subject-department__label">Languages</div>
-          <div class="subject-department__list">
-            <span class="subject-pill">English</span>
-            <span class="subject-pill">isiZulu</span>
-          </div>
-        </div>
-        <div class="subject-department reveal">
-          <div class="subject-department__label">Mathematics</div>
-          <div class="subject-department__list">
-            <span class="subject-pill">Mathematics</span>
-            <span class="subject-pill">Mathematical Literacy</span>
-          </div>
-        </div>
-        <div class="subject-department reveal">
-          <div class="subject-department__label">Sciences</div>
-          <div class="subject-department__list">
-            <span class="subject-pill">Physical Sciences</span>
-            <span class="subject-pill">Life Sciences</span>
-          </div>
-        </div>
-        <div class="subject-department reveal">
-          <div class="subject-department__label">Commerce</div>
-          <div class="subject-department__list">
-            <span class="subject-pill">Accounting</span>
-            <span class="subject-pill">Business Studies</span>
-            <span class="subject-pill">Economics</span>
-          </div>
-        </div>
-        <div class="subject-department reveal">
-          <div class="subject-department__label">Humanities</div>
-          <div class="subject-department__list">
-            <span class="subject-pill">Geography</span>
-            <span class="subject-pill">History</span>
-            <span class="subject-pill">Life Orientation</span>
-          </div>
-        </div>
+      <div class="mt-lg" id="subjects-container" style="margin-top:3.5rem;">
+        <p class="data-state" id="subjects-state">Loading subjects&hellip;</p>
       </div>
     </div>
   </section>
@@ -113,27 +77,8 @@
           <h2>Key dates this term</h2>
         </div>
       </div>
-      <div class="events-list reveal">
-        <div class="event-row">
-          <div class="event-row__date"><span class="day">14</span><span class="month">Jul</span></div>
-          <div class="event-row__title">Term 3 Begins</div>
-          <div class="event-row__cat">Term Dates</div>
-        </div>
-        <div class="event-row">
-          <div class="event-row__date"><span class="day">22</span><span class="month">Jul</span></div>
-          <div class="event-row__title">Parent Meeting &mdash; Grades 8&ndash;12</div>
-          <div class="event-row__cat">Parents</div>
-        </div>
-        <div class="event-row">
-          <div class="event-row__date"><span class="day">15</span><span class="month">Sep</span></div>
-          <div class="event-row__title">Common Examinations Begin</div>
-          <div class="event-row__cat">Exams</div>
-        </div>
-        <div class="event-row">
-          <div class="event-row__date"><span class="day">25</span><span class="month">Sep</span></div>
-          <div class="event-row__title">Term 3 Ends</div>
-          <div class="event-row__cat">Term Dates</div>
-        </div>
+      <div class="events-list reveal" id="calendar-container">
+        <p class="data-state" id="calendar-state">Loading academic calendar&hellip;</p>
       </div>
     </div>
   </section>
@@ -153,6 +98,9 @@
         <p class="eyebrow">Timetables</p>
         <h2>Class &amp; exam schedules</h2>
         <p class="mt-lg">Weekly class timetables are distributed at the start of each term and posted on the notice board outside the admin block. Examination timetables are published at least two weeks before assessments begin, and are also available for download.</p>
+        <div class="timetable-list" id="timetables-container">
+          <p class="data-state" id="timetables-state">Loading timetables&hellip;</p>
+        </div>
       </div>
     </div>
   </section>
@@ -242,5 +190,6 @@
 </footer>
 
 <script src="js/main.js"></script>
+<script type="module" src="js/academics.js"></script>
 </body>
 </html>
