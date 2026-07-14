@@ -48,6 +48,7 @@
     <button class="admin-tab is-active" data-tab="subjects" role="tab">Subjects</button>
     <button class="admin-tab" data-tab="timetables" role="tab">Timetables</button>
     <button class="admin-tab" data-tab="content" role="tab">All site content</button>
+    <button class="admin-tab" data-tab="preview" role="tab">Page preview</button>
   </div>
 
   <div class="admin-msg admin-msg--success" id="global-msg" hidden></div>
@@ -148,9 +149,16 @@
         <select id="content-type"></select>
       </div>
     </div>
-    <div class="admin-card">
-      <h3 id="content-form-title">Add content</h3>
-      <div class="admin-msg admin-msg--error" id="content-error" hidden></div>
+    <div class="admin-card admin-editor-card">
+      <div class="admin-card__heading">
+        <h3 id="content-form-title">Add content</h3>
+        <div class="admin-actions">
+          <button type="button" class="btn btn--outline btn--sm" id="related-page-btn">View related page</button>
+          <button type="button" class="btn btn--outline btn--sm" id="split-preview-btn" aria-pressed="false">Split preview</button>
+        </div>
+      </div>
+      <p class="admin-draft-note" id="draft-preview-note" hidden>Draft preview is temporary. Save to publish these changes.</p>
+      <div class="admin-editor-layout" id="admin-editor-layout">
       <form id="content-form">
         <input type="hidden" id="content-id">
         <div id="content-fields"></div>
@@ -159,13 +167,68 @@
           <button type="button" class="btn btn--outline" id="content-cancel" hidden>Cancel</button>
         </div>
       </form>
+      <div class="admin-split-preview" id="admin-split-preview" hidden>
+        <div class="admin-split-preview__bar"><strong>Draft preview</strong><button type="button" class="btn btn--ghost btn--sm" id="split-refresh-btn">Reset</button></div>
+        <iframe id="split-preview-frame" title="Draft page preview"></iframe>
+      </div>
+      </div>
     </div>
     <div class="admin-card">
       <h3 id="content-list-title">Existing content</h3>
       <div id="content-list" aria-live="polite"><p class="admin-empty">Choose a content section.</p></div>
     </div>
   </section>
+
+  <!-- PAGE PREVIEW PANEL -->
+  <section class="admin-panel" id="panel-preview">
+    <div class="preview-hero">
+      <div><span class="preview-eyebrow">Website overview</span><h2>Page preview center</h2><p>Inspect every public page, review content health, and open the live site without leaving the dashboard.</p></div>
+      <a class="btn btn--primary" href="index.html" target="_blank" rel="noopener">Open live site</a>
+    </div>
+    <div class="preview-summary" id="preview-summary" aria-live="polite"></div>
+    <div class="admin-card preview-search-card">
+      <label class="sr-only" for="preview-search">Search pages and content</label>
+      <input type="search" id="preview-search" placeholder="Search pages and content…" autocomplete="off">
+      <span id="preview-search-count" aria-live="polite"></span>
+    </div>
+    <div class="preview-toolbar">
+      <div><h3>Public pages</h3><p id="preview-updated">Checking website content…</p></div>
+      <div class="preview-view-toggle" role="group" aria-label="Preview display">
+        <button class="btn btn--outline btn--sm is-active" type="button" data-preview-view="cards">Cards</button>
+        <button class="btn btn--outline btn--sm" type="button" data-preview-view="map">Site map</button>
+      </div>
+    </div>
+    <div class="preview-pages" id="preview-pages"></div>
+    <div class="preview-sitemap" id="preview-sitemap" hidden></div>
+  </section>
 </main>
+
+<dialog class="preview-dialog" id="preview-dialog" aria-labelledby="preview-dialog-title">
+  <div class="preview-dialog__shell">
+    <header class="preview-dialog__header">
+      <div><span class="preview-eyebrow">Public page</span><h2 id="preview-dialog-title">Page preview</h2></div>
+      <button type="button" class="preview-icon-btn" id="preview-close" aria-label="Close preview">&times;</button>
+    </header>
+    <div class="preview-dialog__toolbar">
+      <div class="preview-nav-actions">
+        <button type="button" class="btn btn--outline btn--sm" id="preview-prev">Previous</button>
+        <button type="button" class="btn btn--outline btn--sm" id="preview-next">Next</button>
+        <button type="button" class="btn btn--outline btn--sm" id="preview-refresh">Refresh</button>
+      </div>
+      <div class="preview-devices" role="group" aria-label="Preview width">
+        <button type="button" data-device="1920">Desktop</button><button type="button" data-device="1440" class="is-active">Laptop</button><button type="button" data-device="768">Tablet</button><button type="button" data-device="390">Mobile</button>
+      </div>
+      <a class="btn btn--primary btn--sm" id="preview-live-link" target="_blank" rel="noopener">Open live page</a>
+    </div>
+    <div class="preview-dialog__body">
+      <div class="preview-canvas">
+        <div class="preview-loading" id="preview-loading">Loading page preview…</div>
+        <iframe id="preview-frame" title="Public page preview"></iframe>
+      </div>
+      <aside class="preview-meta" id="preview-meta" aria-label="Page metadata"></aside>
+    </div>
+  </div>
+</dialog>
 
 <script type="module" src="js/admin.js"></script>
 </body>

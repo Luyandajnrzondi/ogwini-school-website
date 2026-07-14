@@ -52,6 +52,7 @@ async function refreshSession() {
     loadSubjects();
     loadTimetables();
     initializeContentManager();
+    loadPreviewDashboard();
   } else {
     loginView.hidden = false;
     dashboardView.hidden = true;
@@ -378,6 +379,8 @@ async function loadContentManager() {
   resetContentForm();
   await renderContentFields(config);
   $('content-list-title').textContent = config.label;
+  updateRelatedPageControls(table);
+  if (!$('admin-split-preview').hidden) loadSplitPreview();
   var result = await supabase.from(table).select('*').order(config.fields[0][0], { ascending: true });
   if (result.error) {
     $('content-list').innerHTML = '<p class="admin-empty">Could not load this content: ' + esc(result.error.message) + '</p>';
@@ -459,6 +462,165 @@ async function handleContentAction(event) {
     loadContentManager();
   }
 }
+
+/* =========================================================
+   PAGE PREVIEW CENTER
+   ========================================================= */
+var sitePages = [
+  { key: 'home', name: 'Home', route: 'index.html', tables: ['homepage_content','homepage_slides','homepage_statistics','events','news_articles'] },
+  { key: 'about', name: 'About Us', route: 'about.html', tables: ['school_information','leadership_team'] },
+  { key: 'academics', name: 'Academics', route: 'academics.html', tables: ['academic_departments','academic_calendar','subjects','timetables'] },
+  { key: 'technical', name: 'Technical Subjects', route: 'technical.html', tables: ['technical_subjects','workshop_projects'] },
+  { key: 'sports', name: 'Sports & Culture', route: 'sports-culture.html', tables: ['sports','cultural_activities','achievements','fixtures'] },
+  { key: 'news', name: 'News', route: 'news.html', tables: ['news_categories','news_articles','downloads'] },
+  { key: 'gallery', name: 'Gallery', route: 'gallery.html', tables: ['gallery_categories','gallery_images'] },
+  { key: 'admissions', name: 'Admissions', route: 'admissions.html', tables: ['admissions_information','downloads'] },
+  { key: 'contact', name: 'Contact Us', route: 'contact.html', tables: ['school_information','contact_messages'] }
+];
+var tablePageMap = {};
+sitePages.forEach(function (page) { page.tables.forEach(function (table) { if (!tablePageMap[table]) tablePageMap[table] = page.key; }); });
+tablePageMap.downloads = 'admissions';
+var pageRecords = {};
+var activePageIndex = 0;
+var previewLoaded = false;
+var lastPreviewFocus = null;
+
+function pageByKey(key) { return sitePages.find(function (page) { return page.key === key; }) || sitePages[0]; }
+function routeUrl(route) { return new URL(route, window.location.href).href; }
+function allPageRows(page) { return page.tables.reduce(function (rows, table) { return rows.concat(pageRecords[table] || []); }, []); }
+function hasUsefulValue(value) { return value !== null && value !== undefined && String(value).trim() !== ''; }
+function validLink(value) { try { new URL(value, window.location.href); return true; } catch (error) { return false; } }
+
+async function loadPreviewDashboard(force) {
+  if (previewLoaded && !force) return;
+  previewLoaded = true;
+  $('preview-pages').innerHTML = '<p class="admin-empty">Loading page information…</p>';
+  var tables = [];
+  sitePages.forEach(function (page) { page.tables.forEach(function (table) { if (tables.indexOf(table) < 0) tables.push(table); }); });
+  await Promise.all(tables.map(async function (table) {
+    var result = await supabase.from(table).select('*');
+    pageRecords[table] = result.error ? [] : (result.data || []);
+    pageRecords[table]._error = result.error ? result.error.message : '';
+  }));
+  renderPreviewDashboard();
+}
+
+function pageHealth(page) {
+  var rows = allPageRows(page);
+  var issues = [];
+  var hidden = 0;
+  rows.forEach(function (row) {
+    Object.keys(row).forEach(function (key) {
+      var value = row[key];
+      if ((key.indexOf('image') >= 0 || key.indexOf('photo') >= 0) && !hasUsefulValue(value)) issues.push('Missing image');
+      if ((key.indexOf('url') >= 0 || key.indexOf('link') >= 0) && hasUsefulValue(value) && !validLink(value)) issues.push('Invalid link');
+    });
+    if (row.is_active === false || row.is_published === false || row.published === false) hidden += 1;
+  });
+  if (!rows.length) issues.push('No managed content');
+  return { rows: rows.length, issues: Array.from(new Set(issues)), hidden: hidden, status: issues.length ? 'Review' : 'Healthy' };
+}
+
+function latestDate(page) {
+  var dates = [];
+  allPageRows(page).forEach(function (row) {
+    ['updated_at','created_at','published_at','event_date','project_date'].forEach(function (key) {
+      if (row[key] && !isNaN(Date.parse(row[key]))) dates.push(new Date(row[key]));
+    });
+  });
+  if (!dates.length) return 'Not available';
+  dates.sort(function (a, b) { return b - a; });
+  return dates[0].toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: 'numeric' });
+}
+
+function renderPreviewDashboard(query) {
+  query = String(query || '').trim().toLowerCase();
+  var matched = sitePages.filter(function (page) {
+    if (!query) return true;
+    var content = [page.name, page.route].concat(page.tables).concat(allPageRows(page).map(function (row) { return Object.values(row).join(' '); })).join(' ').toLowerCase();
+    return content.indexOf(query) >= 0;
+  });
+  var totalRecords = sitePages.reduce(function (sum, page) { return sum + pageHealth(page).rows; }, 0);
+  var reviewCount = sitePages.filter(function (page) { return pageHealth(page).status === 'Review'; }).length;
+  $('preview-summary').innerHTML = '<div><strong>' + sitePages.length + '</strong><span>Public pages</span></div><div><strong>' + totalRecords + '</strong><span>Managed records</span></div><div><strong>' + (sitePages.length - reviewCount) + '</strong><span>Healthy pages</span></div><div><strong>' + reviewCount + '</strong><span>Need review</span></div>';
+  $('preview-search-count').textContent = query ? matched.length + ' page' + (matched.length === 1 ? '' : 's') : '';
+  $('preview-updated').textContent = 'Content check completed ' + new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+  $('preview-pages').innerHTML = matched.length ? matched.map(function (page) {
+    var health = pageHealth(page);
+    return '<article class="preview-page-card"><div class="preview-page-card__top"><span class="preview-page-index">' + String(sitePages.indexOf(page) + 1).padStart(2, '0') + '</span><span class="preview-status preview-status--' + health.status.toLowerCase() + '">' + health.status + '</span></div><h3>' + esc(page.name) + '</h3><p>/' + esc(page.route) + '</p><dl><div><dt>Records</dt><dd>' + health.rows + '</dd></div><div><dt>Updated</dt><dd>' + esc(latestDate(page)) + '</dd></div></dl>' + (health.issues.length ? '<p class="preview-issue">' + esc(health.issues.join(' · ')) + '</p>' : '<p class="preview-good">No content issues detected</p>') + '<div class="admin-actions"><button class="btn btn--primary btn--sm" data-open-preview="' + page.key + '">Preview</button><a class="btn btn--outline btn--sm" href="' + esc(page.route) + '" target="_blank" rel="noopener">Live page</a></div></article>';
+  }).join('') : '<div class="admin-card preview-empty"><h3>No matching pages</h3><p>Try a page name, section, article, event, or subject.</p></div>';
+  $('preview-sitemap').innerHTML = '<div class="sitemap-home">Ogwini CTHS</div><div class="sitemap-branches">' + matched.map(function (page) { return '<button type="button" data-open-preview="' + page.key + '"><strong>' + esc(page.name) + '</strong><span>' + page.tables.length + ' content sources</span></button>'; }).join('') + '</div>';
+}
+
+function previewMetaHtml(page) {
+  var health = pageHealth(page);
+  return '<div class="preview-meta__section"><span class="preview-status preview-status--' + health.status.toLowerCase() + '">' + health.status + '</span><h3>Page details</h3><dl><div><dt>Route</dt><dd>/' + esc(page.route) + '</dd></div><div><dt>Managed records</dt><dd>' + health.rows + '</dd></div><div><dt>Last updated</dt><dd>' + esc(latestDate(page)) + '</dd></div><div><dt>Hidden records</dt><dd>' + health.hidden + '</dd></div></dl></div><div class="preview-meta__section"><h3>Content sources</h3><ul>' + page.tables.map(function (table) { return '<li><span>' + esc((contentConfigs[table] && contentConfigs[table].label) || table.replace(/_/g, ' ')) + '</span><strong>' + (pageRecords[table] || []).length + '</strong></li>'; }).join('') + '</ul></div><div class="preview-meta__section"><h3>Health notes</h3><p>' + esc(health.issues.length ? health.issues.join('. ') : 'All available managed content checks passed.') + '</p></div>';
+}
+
+function openPreview(key) {
+  var page = pageByKey(key);
+  activePageIndex = sitePages.indexOf(page);
+  lastPreviewFocus = document.activeElement;
+  $('preview-dialog-title').textContent = page.name;
+  $('preview-live-link').href = page.route;
+  $('preview-meta').innerHTML = previewMetaHtml(page);
+  $('preview-loading').hidden = false;
+  $('preview-frame').src = routeUrl(page.route) + '?preview=' + Date.now();
+  if (!$('preview-dialog').open) $('preview-dialog').showModal();
+}
+function navigatePreview(direction) { activePageIndex = (activePageIndex + direction + sitePages.length) % sitePages.length; openPreview(sitePages[activePageIndex].key); }
+function closePreview() { $('preview-dialog').close(); if (lastPreviewFocus) lastPreviewFocus.focus(); }
+
+function updateRelatedPageControls(table) {
+  var page = pageByKey(tablePageMap[table]);
+  $('related-page-btn').textContent = 'View ' + page.name;
+  $('related-page-btn').setAttribute('data-related-page', page.key);
+}
+function loadSplitPreview() {
+  var page = pageByKey(tablePageMap[$('content-type').value]);
+  $('split-preview-frame').src = routeUrl(page.route) + '?draft=' + Date.now();
+  $('draft-preview-note').hidden = false;
+}
+function patchDraftPreview() {
+  var frame = $('split-preview-frame');
+  if (frame.hidden || !frame.contentDocument) return;
+  var config = contentConfigs[$('content-type').value];
+  var textNodes = Array.from(frame.contentDocument.querySelectorAll('h1,h2,h3,h4,p,a,span,li'));
+  var textIndex = 0;
+  config.fields.forEach(function (field) {
+    var input = $(inputId(field[0]));
+    if (!input || input.type === 'checkbox' || !hasUsefulValue(input.value)) return;
+    var name = field[0];
+    if (name.indexOf('image') >= 0 || name.indexOf('photo') >= 0) {
+      var image = frame.contentDocument.querySelector('main img, .hero img');
+      if (image) image.src = input.value;
+    } else if (name.indexOf('link') >= 0 || name.indexOf('url') >= 0) {
+      var link = frame.contentDocument.querySelector('main a');
+      if (link && validLink(input.value)) link.href = input.value;
+    } else if (textIndex < textNodes.length) {
+      textNodes[textIndex].textContent = input.value;
+      textIndex += 1;
+    }
+  });
+}
+
+$('preview-pages').addEventListener('click', function (event) { var key = event.target.closest('[data-open-preview]'); if (key) openPreview(key.getAttribute('data-open-preview')); });
+$('preview-sitemap').addEventListener('click', function (event) { var key = event.target.closest('[data-open-preview]'); if (key) openPreview(key.getAttribute('data-open-preview')); });
+$('preview-search').addEventListener('input', function () { renderPreviewDashboard(this.value); });
+document.querySelectorAll('[data-preview-view]').forEach(function (button) { button.addEventListener('click', function () { document.querySelectorAll('[data-preview-view]').forEach(function (item) { item.classList.remove('is-active'); }); button.classList.add('is-active'); var map = button.getAttribute('data-preview-view') === 'map'; $('preview-pages').hidden = map; $('preview-sitemap').hidden = !map; }); });
+$('preview-close').addEventListener('click', closePreview);
+$('preview-dialog').addEventListener('click', function (event) { if (event.target === $('preview-dialog')) closePreview(); });
+$('preview-frame').addEventListener('load', function () { $('preview-loading').hidden = true; });
+$('preview-prev').addEventListener('click', function () { navigatePreview(-1); });
+$('preview-next').addEventListener('click', function () { navigatePreview(1); });
+$('preview-refresh').addEventListener('click', function () { previewLoaded = false; loadPreviewDashboard(true); openPreview(sitePages[activePageIndex].key); });
+document.querySelectorAll('[data-device]').forEach(function (button) { button.addEventListener('click', function () { document.querySelectorAll('[data-device]').forEach(function (item) { item.classList.remove('is-active'); }); button.classList.add('is-active'); $('preview-frame').style.width = button.getAttribute('data-device') + 'px'; }); });
+$('related-page-btn').addEventListener('click', function () { openPreview(this.getAttribute('data-related-page')); });
+$('split-preview-btn').addEventListener('click', function () { var panel = $('admin-split-preview'); panel.hidden = !panel.hidden; this.setAttribute('aria-pressed', String(!panel.hidden)); this.textContent = panel.hidden ? 'Split preview' : 'Close preview'; $('admin-editor-layout').classList.toggle('is-split', !panel.hidden); if (!panel.hidden) loadSplitPreview(); else $('draft-preview-note').hidden = true; });
+$('split-refresh-btn').addEventListener('click', loadSplitPreview);
+$('split-preview-frame').addEventListener('load', patchDraftPreview);
+$('content-fields').addEventListener('input', patchDraftPreview);
+$('content-fields').addEventListener('change', patchDraftPreview);
 
 /* ---------- init ---------- */
 refreshSession();
