@@ -54,8 +54,10 @@
       <div class="reveal">
         <p class="eyebrow">Our History</p>
         <h2>The Ogwini story</h2>
-        <p class="mt-lg">Ogwini Comprehensive Technical High School was established to answer a clear community need: a school that could combine rigorous academic teaching with genuine, workshop-based technical training. Over more than three decades, the school has grown from a handful of classrooms into a full comprehensive campus with dedicated laboratories, technical workshops, and sporting facilities.</p>
-        <p>Generations of learners have passed through our gates &mdash; many going on to universities, TVET colleges, apprenticeships and successful careers in engineering, construction, ICT and commerce. Today, Ogwini remains rooted in the same founding purpose: preparing every learner, academic or technical, for a future built on real skill.</p>
+        <div class="mt-lg" id="about-history">
+          <p>Ogwini Comprehensive Technical High School was established to answer a clear community need: a school that could combine rigorous academic teaching with genuine, workshop-based technical training. Over more than three decades, the school has grown from a handful of classrooms into a full comprehensive campus with dedicated laboratories, technical workshops, and sporting facilities.</p>
+          <p>Generations of learners have passed through our gates &mdash; many going on to universities, TVET colleges, apprenticeships and successful careers in engineering, construction, ICT and commerce. Today, Ogwini remains rooted in the same founding purpose: preparing every learner, academic or technical, for a future built on real skill.</p>
+        </div>
       </div>
       <div class="two-col__media reveal">
         <img src="https://images.unsplash.com/photo-1580582932707-520aed937b7b?q=80&w=800&auto=format&fit=crop" alt="Historic view of the Ogwini school building">
@@ -70,12 +72,12 @@
         <div class="vm-card reveal">
           <p class="eyebrow">Vision</p>
           <h3>Where we're headed</h3>
-          <p>To be a leading institution that empowers learners through quality academic and technical education.</p>
+          <p id="about-vision">To be a leading institution that empowers learners through quality academic and technical education.</p>
         </div>
         <div class="vm-card reveal">
           <p class="eyebrow">Mission</p>
           <h3>How we get there</h3>
-          <p>To provide a safe, innovative, and inclusive learning environment that develops knowledgeable, skilled, and responsible citizens.</p>
+          <p id="about-mission">To provide a safe, innovative, and inclusive learning environment that develops knowledgeable, skilled, and responsible citizens.</p>
         </div>
       </div>
     </div>
@@ -109,9 +111,11 @@
       <div class="reveal">
         <p class="eyebrow">Principal's Desk</p>
         <h2>A message from the Principal</h2>
-        <p class="mt-lg">It is my privilege to lead a school with such a clear sense of purpose. At Ogwini, we do not separate academic ambition from technical skill &mdash; we treat them as two halves of the same goal: preparing capable, confident young people for the world beyond matric.</p>
-        <p>I encourage every parent and learner considering Ogwini to visit our campus, meet our staff, and see our workshops in action. You will find a school community that takes discipline seriously, celebrates achievement, and never stops striving for better.</p>
-        <p><strong>Mr. S. Ndlovu</strong><br>Principal</p>
+        <div class="mt-lg" id="about-principal-message">
+          <p>It is my privilege to lead a school with such a clear sense of purpose. At Ogwini, we do not separate academic ambition from technical skill &mdash; we treat them as two halves of the same goal: preparing capable, confident young people for the world beyond matric.</p>
+          <p>I encourage every parent and learner considering Ogwini to visit our campus, meet our staff, and see our workshops in action. You will find a school community that takes discipline seriously, celebrates achievement, and never stops striving for better.</p>
+        </div>
+        <p><strong id="about-principal-name">Mr. S. Ndlovu</strong><br>Principal</p>
       </div>
     </div>
   </section>
@@ -126,27 +130,8 @@
         </div>
         <a href="staff.html" class="btn btn--outline">Full Staff Directory</a>
       </div>
-      <div class="people-grid">
-        <div class="person reveal">
-          <div class="person__photo"><img src="https://images.unsplash.com/photo-1560250097-0b93528c311a?q=80&w=500&auto=format&fit=crop" alt="Portrait of the Principal"></div>
-          <h3>Mr. S. Ndlovu</h3>
-          <p class="person__role">Principal</p>
-        </div>
-        <div class="person reveal">
-          <div class="person__photo"><img src="https://images.unsplash.com/photo-1573497019940-1c28c88b4f3e?q=80&w=500&auto=format&fit=crop" alt="Portrait of the Deputy Principal, Academics"></div>
-          <h3>Mrs. T. Khumalo</h3>
-          <p class="person__role">Deputy Principal &mdash; Academics</p>
-        </div>
-        <div class="person reveal">
-          <div class="person__photo"><img src="https://images.unsplash.com/photo-1607990281513-2c110a25bd8c?q=80&w=500&auto=format&fit=crop" alt="Portrait of the Deputy Principal, Technical"></div>
-          <h3>Mr. B. Mokoena</h3>
-          <p class="person__role">Deputy Principal &mdash; Technical</p>
-        </div>
-        <div class="person reveal">
-          <div class="person__photo"><img src="https://images.unsplash.com/photo-1596075780750-81249df16d19?q=80&w=500&auto=format&fit=crop" alt="Portrait of the Head of Department for Sciences"></div>
-          <h3>Ms. N. Zulu</h3>
-          <p class="person__role">HOD &mdash; Sciences</p>
-        </div>
+      <div class="people-grid" id="leadership-container">
+        <p class="data-state">Loading leadership team&hellip;</p>
       </div>
       <p class="mt-lg max-w-prose">Our School Governing Body works alongside the leadership team, representing parents, educators and the community in strategic decisions affecting the school.</p>
     </div>
@@ -222,5 +207,6 @@
 </footer>
 
 <script src="js/main.js"></script>
+<script type="module" src="js/about.js"></script>
 </body>
 </html>

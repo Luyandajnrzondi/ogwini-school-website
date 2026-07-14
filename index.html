@@ -44,9 +44,9 @@
   <section class="hero blueprint">
     <div class="container hero__grid">
       <div class="reveal is-visible">
-        <p class="hero__motto">&ldquo;Empowering Minds, Building Skills, Shaping the Future.&rdquo;</p>
-        <h1>Welcome to <em>Ogwini</em> Comprehensive Technical High School</h1>
-        <p class="hero__lede">Where academic excellence meets hands-on technical skill. We prepare learners for engineering, trades, commerce and beyond &mdash; in workshops and classrooms built for the future of work.</p>
+        <p class="hero__motto" id="home-hero-motto">&ldquo;Empowering Minds, Building Skills, Shaping the Future.&rdquo;</p>
+        <h1 id="home-hero-title">Welcome to <em>Ogwini</em> Comprehensive Technical High School</h1>
+        <p class="hero__lede" id="home-hero-lede">Where academic excellence meets hands-on technical skill. We prepare learners for engineering, trades, commerce and beyond &mdash; in workshops and classrooms built for the future of work.</p>
         <div class="hero__actions btn-row">
           <a href="admissions.html#apply" class="btn btn--primary">Apply Now</a>
           <a href="contact.html" class="btn btn--ghost">Contact Us</a>
@@ -66,7 +66,7 @@
       <div class="reveal">
         <p class="eyebrow">A Word From The Principal</p>
         <h2>A school built on discipline, skill, and belief in every learner.</h2>
-        <p class="mt-lg">Ogwini Comprehensive Technical High School was founded on a simple belief: that every learner deserves both a strong academic foundation and real, practical skill. Our classrooms, laboratories and workshops work together to prepare young people not only for examinations, but for life beyond them.</p>
+        <p class="mt-lg" id="home-principal-message">Ogwini Comprehensive Technical High School was founded on a simple belief: that every learner deserves both a strong academic foundation and real, practical skill. Our classrooms, laboratories and workshops work together to prepare young people not only for examinations, but for life beyond them.</p>
         <p>We are proud of the discipline, respect and innovation our learners carry with them &mdash; qualities that will serve them in further study, in trades, and in the workplace. I welcome you to explore our school and to consider Ogwini for your child's journey.</p>
         <p><strong>Mr. S. Ndlovu</strong><br>Principal, Ogwini Comprehensive Technical High School</p>
         <a href="about.html#principal" class="btn btn--outline mt-lg" style="margin-top:1rem;">Read the Principal's Full Message</a>
@@ -129,28 +129,8 @@
         </div>
         <a href="news.html" class="btn btn--outline">All News</a>
       </div>
-      <div class="news-grid">
-        <article class="news-card bracket-frame reveal">
-          <span class="news-card__tag">Announcement</span>
-          <span class="news-card__date">14 July 2026</span>
-          <h3>School Reopens for Term 3</h3>
-          <p>Learners return on Monday, 14 July. Full uniform and stationery are expected from day one; the Term 3 timetable is now available on the notice board.</p>
-          <a href="news.html#reopens-term3" class="read-more">Read more <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 8h10M9 4l4 4-4 4"/></svg></a>
-        </article>
-        <article class="news-card bracket-frame reveal">
-          <span class="news-card__tag">Grade 12</span>
-          <span class="news-card__date">2 July 2026</span>
-          <h3>Grade 12 Career Expo</h3>
-          <p>Representatives from TVET colleges, universities and industry partners met with our Grade 12 learners to discuss study and career pathways after matric.</p>
-          <a href="news.html#career-expo" class="read-more">Read more <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 8h10M9 4l4 4-4 4"/></svg></a>
-        </article>
-        <article class="news-card bracket-frame reveal">
-          <span class="news-card__tag">Sport</span>
-          <span class="news-card__date">24 June 2026</span>
-          <h3>Sports Tournament Success</h3>
-          <p>Our First XI soccer team and senior netball squad both advanced to the district finals after a strong showing at the inter-schools tournament.</p>
-          <a href="news.html#sports-success" class="read-more">Read more <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 8h10M9 4l4 4-4 4"/></svg></a>
-        </article>
+      <div class="news-grid" id="home-news">
+        <p class="data-state">Loading news&hellip;</p>
       </div>
     </div>
   </section>
@@ -164,27 +144,8 @@
         <p class="mt-lg">Stay up to date with parent meetings, sports fixtures, examinations and school functions throughout the term.</p>
         <a href="academics.html#calendar" class="btn btn--outline" style="margin-top:1rem;">Full Academic Calendar</a>
       </div>
-      <div class="events-list reveal">
-        <div class="event-row">
-          <div class="event-row__date"><span class="day">22</span><span class="month">Jul</span></div>
-          <div class="event-row__title">Term 3 Parent Meeting &mdash; Grades 8&ndash;12</div>
-          <div class="event-row__cat">Parents</div>
-        </div>
-        <div class="event-row">
-          <div class="event-row__date"><span class="day">08</span><span class="month">Aug</span></div>
-          <div class="event-row__title">Inter-House Sports Day</div>
-          <div class="event-row__cat">Sport</div>
-        </div>
-        <div class="event-row">
-          <div class="event-row__date"><span class="day">15</span><span class="month">Sep</span></div>
-          <div class="event-row__title">Term 3 Common Examinations Begin</div>
-          <div class="event-row__cat">Exams</div>
-        </div>
-        <div class="event-row">
-          <div class="event-row__date"><span class="day">03</span><span class="month">Oct</span></div>
-          <div class="event-row__title">Cultural &amp; Heritage Day Function</div>
-          <div class="event-row__cat">Function</div>
-        </div>
+      <div class="events-list reveal" id="home-events">
+        <p class="data-state">Loading events&hellip;</p>
       </div>
     </div>
   </section>
@@ -198,23 +159,8 @@
           <h2>Building on years of technical education</h2>
         </div>
       </div>
-      <div class="stats reveal">
-        <div class="stat">
-          <span class="stat__num" data-count="1450" data-suffix="+">0</span>
-          <p class="stat__label">Learners Enrolled</p>
-        </div>
-        <div class="stat">
-          <span class="stat__num" data-count="58">0</span>
-          <p class="stat__label">Educators &amp; Support Staff</p>
-        </div>
-        <div class="stat">
-          <span class="stat__num" data-count="92" data-suffix="%">0</span>
-          <p class="stat__label">Matric Pass Rate</p>
-        </div>
-        <div class="stat">
-          <span class="stat__num" data-count="35" data-suffix="+">0</span>
-          <p class="stat__label">Years of Excellence</p>
-        </div>
+      <div class="stats reveal" id="home-stats">
+        <p class="data-state">Loading statistics&hellip;</p>
       </div>
     </div>
   </section>
@@ -284,5 +230,6 @@
 </footer>
 
 <script src="js/main.js"></script>
+<script type="module" src="js/home.js"></script>
 </body>
 </html>
