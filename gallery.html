@@ -50,33 +50,12 @@
 
   <section class="section">
     <div class="container">
-      <div class="filter-row reveal">
+      <div class="filter-row reveal" id="gallery-filters" aria-live="polite">
         <button class="filter-btn is-active" data-filter="all">All</button>
-        <button class="filter-btn" data-filter="academic">Academic Activities</button>
-        <button class="filter-btn" data-filter="technical">Technical Workshops</button>
-        <button class="filter-btn" data-filter="sports">Sports Events</button>
-        <button class="filter-btn" data-filter="culture">Cultural Events</button>
-        <button class="filter-btn" data-filter="graduation">Graduation &amp; Awards</button>
-        <button class="filter-btn" data-filter="campus">Campus Facilities</button>
       </div>
 
-      <div class="gallery-grid reveal">
-        <div class="gallery-item" data-category="academic"><img src="https://images.unsplash.com/photo-1523240795612-9a054b0db644?q=80&w=600&auto=format&fit=crop" alt="Learners engaged in a classroom lesson"><span class="gallery-item__cap">Classroom Lesson</span></div>
-        <div class="gallery-item" data-category="academic"><img src="https://images.unsplash.com/photo-1580582932707-520aed937b7b?q=80&w=600&auto=format&fit=crop" alt="Learners studying in the library"><span class="gallery-item__cap">Library Study Session</span></div>
-        <div class="gallery-item" data-category="technical"><img src="https://images.unsplash.com/photo-1581092160607-ee22621dd758?q=80&w=600&auto=format&fit=crop" alt="Learner working at a drafting table"><span class="gallery-item__cap">Engineering Graphics &amp; Design</span></div>
-        <div class="gallery-item" data-category="technical"><img src="https://images.unsplash.com/photo-1504328345606-18bbc8c9d7d1?q=80&w=600&auto=format&fit=crop" alt="Learner in the electrical technology workshop"><span class="gallery-item__cap">Electrical Technology Workshop</span></div>
-        <div class="gallery-item" data-category="technical"><img src="https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?q=80&w=600&auto=format&fit=crop" alt="Mechanical technology practical class"><span class="gallery-item__cap">Mechanical Technology Practical</span></div>
-        <div class="gallery-item" data-category="sports"><img src="https://images.unsplash.com/photo-1526232761682-d26e03ac148e?q=80&w=600&auto=format&fit=crop" alt="Soccer match on the school field"><span class="gallery-item__cap">Soccer Fixture</span></div>
-        <div class="gallery-item" data-category="sports"><img src="https://images.unsplash.com/photo-1518614368389-8748e65e94ba?q=80&w=600&auto=format&fit=crop" alt="Netball team in action"><span class="gallery-item__cap">Netball Match</span></div>
-        <div class="gallery-item" data-category="sports"><img src="https://images.unsplash.com/photo-1461896836934-ffe607ba8211?q=80&w=600&auto=format&fit=crop" alt="Athletics track and field event"><span class="gallery-item__cap">Athletics Day</span></div>
-        <div class="gallery-item" data-category="culture"><img src="https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?q=80&w=600&auto=format&fit=crop" alt="School choir performing"><span class="gallery-item__cap">Choir Performance</span></div>
-        <div class="gallery-item" data-category="culture"><img src="https://images.unsplash.com/photo-1503095396549-807759245b35?q=80&w=600&auto=format&fit=crop" alt="Drama club rehearsal on stage"><span class="gallery-item__cap">Drama Production</span></div>
-        <div class="gallery-item" data-category="graduation"><img src="https://images.unsplash.com/photo-1541339907198-e08756dedf3f?q=80&w=600&auto=format&fit=crop" alt="Graduation ceremony with learners in gowns"><span class="gallery-item__cap">Matric Graduation</span></div>
-        <div class="gallery-item" data-category="graduation"><img src="https://images.unsplash.com/photo-1523050854058-8df90110c9f1?q=80&w=600&auto=format&fit=crop" alt="Academic awards ceremony"><span class="gallery-item__cap">Academic Awards Ceremony</span></div>
-        <div class="gallery-item" data-category="campus"><img src="https://images.unsplash.com/photo-1613896527056-e276c1f21ba5?q=80&w=600&auto=format&fit=crop" alt="View of the school campus building"><span class="gallery-item__cap">Main Campus Building</span></div>
-        <div class="gallery-item" data-category="campus"><img src="https://images.unsplash.com/photo-1580587771525-78b9dba3b914?q=80&w=600&auto=format&fit=crop" alt="School library interior"><span class="gallery-item__cap">Library Resource Centre</span></div>
-        <div class="gallery-item" data-category="campus"><img src="https://images.unsplash.com/photo-1571260899304-425eee4c7efc?q=80&w=600&auto=format&fit=crop" alt="School sports grounds"><span class="gallery-item__cap">Sports Grounds</span></div>
-        <div class="gallery-item" data-category="academic"><img src="https://images.unsplash.com/photo-1509062522246-3755977927d7?q=80&w=600&auto=format&fit=crop" alt="Science laboratory practical session"><span class="gallery-item__cap">Sciences Laboratory</span></div>
+      <div class="gallery-grid reveal" id="gallery-images" aria-live="polite">
+        <p class="admin-empty">Loading gallery&hellip;</p>
       </div>
     </div>
   </section>
@@ -142,5 +121,6 @@
 </div>
 
 <script src="js/main.js"></script>
+<script type="module" src="js/gallery.js"></script>
 </body>
 </html>
