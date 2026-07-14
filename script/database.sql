@@ -198,6 +198,12 @@ create table public.leadership_team (
   constraint leadership_team_pkey primary key (id)
 ) TABLESPACE pg_default;
 
+create table public.news_categories (
+  id uuid not null default gen_random_uuid (),
+  name text not null,
+  constraint news_categories_pkey primary key (id)
+) TABLESPACE pg_default;
+
 create table public.news_articles (
   id uuid not null default gen_random_uuid (),
   category_id uuid null,
