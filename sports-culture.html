@@ -57,13 +57,8 @@
           <h2>Sports offered at Ogwini</h2>
         </div>
       </div>
-      <div class="tag-cloud reveal">
-        <span class="tag-pill">Soccer</span>
-        <span class="tag-pill">Netball</span>
-        <span class="tag-pill">Rugby</span>
-        <span class="tag-pill">Athletics</span>
-        <span class="tag-pill">Volleyball</span>
-        <span class="tag-pill">Cricket</span>
+      <div class="tag-cloud reveal" id="sports-list" aria-live="polite">
+        <p class="admin-empty">Loading sports&hellip;</p>
       </div>
     </div>
   </section>
@@ -75,12 +70,8 @@
         <p class="eyebrow">Cultural Activities</p>
         <h2>Expression, performance and voice</h2>
         <p class="mt-lg">Our cultural programme gives learners space to perform, compete and express themselves &mdash; building confidence that carries into every part of school life.</p>
-        <div class="tag-cloud" style="margin-top:1.5rem;">
-          <span class="tag-pill">Choir</span>
-          <span class="tag-pill">Debate</span>
-          <span class="tag-pill">Drama</span>
-          <span class="tag-pill">Dance</span>
-          <span class="tag-pill">Poetry</span>
+        <div class="tag-cloud" id="culture-list" style="margin-top:1.5rem;" aria-live="polite">
+          <p class="admin-empty">Loading cultural activities&hellip;</p>
         </div>
       </div>
       <div class="two-col__media reveal">
@@ -98,19 +89,8 @@
           <h2>Recent honours</h2>
         </div>
       </div>
-      <div class="reveal">
-        <div class="achievement-row">
-          <div class="achievement-row__year">2026</div>
-          <div><h3>District Netball Champions</h3><p>Senior netball team wins the district inter-schools championship for the second consecutive year.</p></div>
-        </div>
-        <div class="achievement-row">
-          <div class="achievement-row__year">2026</div>
-          <div><h3>Choir — Regional Eisteddfod, 2nd Place</h3><p>The Ogwini choir placed second at the regional schools eisteddfod, its best result to date.</p></div>
-        </div>
-        <div class="achievement-row">
-          <div class="achievement-row__year">2025</div>
-          <div><h3>Provincial Athletics Qualifiers</h3><p>Four learners qualified for the provincial athletics championships across track and field events.</p></div>
-        </div>
+      <div class="reveal" id="achievements-list" aria-live="polite">
+        <p class="admin-empty">Loading achievements&hellip;</p>
       </div>
     </div>
   </section>
@@ -124,22 +104,8 @@
           <h2>What's coming up</h2>
         </div>
       </div>
-      <div class="events-list reveal">
-        <div class="event-row">
-          <div class="event-row__date"><span class="day">18</span><span class="month">Jul</span></div>
-          <div class="event-row__title">Soccer — First XI vs. Umlazi Secondary (Home)</div>
-          <div class="event-row__cat">Fixture</div>
-        </div>
-        <div class="event-row">
-          <div class="event-row__date"><span class="day">25</span><span class="month">Jul</span></div>
-          <div class="event-row__title">Netball — District Semi-Final (Away)</div>
-          <div class="event-row__cat">Fixture</div>
-        </div>
-        <div class="event-row">
-          <div class="event-row__date"><span class="day">08</span><span class="month">Aug</span></div>
-          <div class="event-row__title">Inter-House Athletics Day</div>
-          <div class="event-row__cat">Result Pending</div>
-        </div>
+      <div class="events-list reveal" id="fixtures-list" aria-live="polite">
+        <p class="admin-empty">Loading fixtures and results&hellip;</p>
       </div>
     </div>
   </section>
@@ -214,5 +180,6 @@
 </footer>
 
 <script src="js/main.js"></script>
+<script type="module" src="js/sports.js"></script>
 </body>
 </html>

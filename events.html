@@ -3,8 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Admissions — Ogwini Comprehensive Technical High School</title>
-<meta name="description" content="Admission requirements, application process, required documents and FAQs for Ogwini Comprehensive Technical High School.">
+<title>Events — Ogwini Comprehensive Technical High School</title>
+<meta name="description" content="Upcoming and past events at Ogwini Comprehensive Technical High School.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,400;1,9..144,500&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -27,7 +27,7 @@
       <a href="sports-culture.html">Sports &amp; Culture</a>
       <a href="news.html">News</a>
       <a href="gallery.html">Gallery</a>
-      <a href="admissions.html" aria-current="page">Admissions</a>
+      <a href="admissions.html">Admissions</a>
       <a href="contact.html">Contact Us</a>
     </nav>
     <div class="nav__actions">
@@ -41,70 +41,24 @@
 
   <section class="page-hero blueprint">
     <div class="container">
-      <p class="breadcrumb"><a href="index.html">Home</a> / Admissions</p>
-      <p class="eyebrow">Admissions</p>
-      <h1>Begin your Ogwini journey.</h1>
-      <p>Everything you need to know about applying &mdash; requirements, the step-by-step process, required documents and answers to common questions.</p>
+      <p class="breadcrumb"><a href="index.html">Home</a> / Events</p>
+      <p class="eyebrow">School Calendar</p>
+      <h1>Events at Ogwini.</h1>
+      <p>Keep track of school activities, meetings and important dates managed by our staff.</p>
     </div>
   </section>
 
   <section class="section">
     <div class="container">
-      <div class="reveal max-w-prose">
-        <p class="eyebrow">Admissions Overview</p>
-        <h2 id="admissions-status">Loading admissions information&hellip;</h2>
-        <div class="mt-lg" id="admissions-overview" aria-live="polite"></div>
-        <p class="form-note" id="admissions-deadline"></p>
-        <div class="btn-row" id="admissions-actions" style="margin-top:1.5rem;"></div>
-      </div>
+      <div class="section__head reveal"><div><p class="eyebrow">Coming Up</p><h2>Upcoming events</h2></div></div>
+      <div class="events-list reveal" id="upcoming-events" aria-live="polite"><p class="admin-empty">Loading events&hellip;</p></div>
     </div>
   </section>
 
-  <!-- ADMISSION REQUIREMENTS -->
   <section class="section section--band">
     <div class="container">
-      <div class="section__head reveal">
-        <div>
-          <p class="eyebrow">Admission Requirements</p>
-          <h2>Who can apply</h2>
-        </div>
-      </div>
-      <div class="reveal max-w-prose" id="admissions-requirements" aria-live="polite">
-        <p>Loading requirements&hellip;</p>
-      </div>
-    </div>
-  </section>
-
-  <!-- APPLICATION PROCESS -->
-  <section class="section" id="apply">
-    <div class="container">
-      <div class="section__head reveal">
-        <div>
-          <p class="eyebrow">Application Process</p>
-          <h2>Four steps to enrolment</h2>
-        </div>
-      </div>
-      <div class="steps reveal" id="admissions-process" aria-live="polite">
-        <p class="admin-empty">Loading application process&hellip;</p>
-      </div>
-    </div>
-  </section>
-
-  <!-- REQUIRED DOCUMENTS -->
-  <section class="section section--band">
-    <div class="container">
-      <div class="section__head reveal"><div><p class="eyebrow">Download Centre</p><h2>Forms &amp; admissions resources</h2></div></div>
-      <div class="reveal" id="admissions-downloads" aria-live="polite">
-        <p class="admin-empty">Loading admissions downloads&hellip;</p>
-      </div>
-    </div>
-  </section>
-
-  <section class="cta-band section--dark section--tight">
-    <div class="container">
-      <h2>Have more questions?</h2>
-      <p>Our admissions office is happy to help with anything not covered here.</p>
-      <div class="btn-row"><a href="contact.html" class="btn btn--primary">Contact Admissions</a></div>
+      <div class="section__head reveal"><div><p class="eyebrow">Archive</p><h2>Past events</h2></div></div>
+      <div class="events-list reveal" id="past-events" aria-live="polite"><p class="admin-empty">Loading past events&hellip;</p></div>
     </div>
   </section>
 
@@ -159,6 +113,6 @@
 </footer>
 
 <script src="js/main.js"></script>
-<script type="module" src="js/admissions.js"></script>
+<script type="module" src="js/events.js"></script>
 </body>
 </html>

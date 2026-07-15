@@ -198,6 +198,12 @@ create table public.leadership_team (
   constraint leadership_team_pkey primary key (id)
 ) TABLESPACE pg_default;
 
+create table public.news_categories (
+  id uuid not null default gen_random_uuid (),
+  name text not null,
+  constraint news_categories_pkey primary key (id)
+) TABLESPACE pg_default;
+
 create table public.news_articles (
   id uuid not null default gen_random_uuid (),
   category_id uuid null,
@@ -232,23 +238,6 @@ create table public.newsletter_subscribers (
   constraint newsletter_subscribers_pkey primary key (id),
   constraint newsletter_subscribers_email_key unique (email)
 ) TABLESPACE pg_default;
-
-create table public.school_information (
-  id uuid not null default gen_random_uuid (),
-  school_name text null,
-  motto text null,
-  history text null,
-  vision text null,
-  mission text null,
-  principal_name text null,
-  principal_message text null,
-  school_email text null,
-  school_phone text null,
-  school_address text null,
-  created_at timestamp with time zone null default now(),
-  constraint school_information_pkey primary key (id)
-) TABLESPACE pg_default;
-
 
 create table public.school_information (
   id uuid not null default gen_random_uuid (),
