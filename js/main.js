@@ -1,3 +1,4 @@
+import { supabase } from './supabase-client.js';
 /* =========================================================
    OGWINI COMPREHENSIVE TECHNICAL HIGH SCHOOL — main.js
    Shared behaviour across all pages.
@@ -123,9 +124,34 @@
       a.setAttribute('aria-current', 'page');
     }
   });
+  
 
   /* ---------- Footer year ---------- */
   var yearEl = document.getElementById('year');
   if (yearEl) yearEl.textContent = new Date().getFullYear();
+  async function loadFooterContact() {
+  const footerAddress = document.getElementById('footer-address');
+  const footerPhone = document.getElementById('footer-phone');
+  const footerEmail = document.getElementById('footer-email');
 
+  if (!footerAddress || !footerPhone || !footerEmail) return;
+
+  const { data, error } = await supabase
+    .from('school_information')
+    .select('school_address, school_phone, school_email')
+    .single();
+
+  if (error || !data) return;
+
+  footerAddress.innerHTML = data.school_address || '';
+
+  footerPhone.innerHTML = data.school_phone
+    ? `<a href="tel:${data.school_phone.replace(/\s/g, '')}">${data.school_phone}</a>`
+    : '';
+
+  footerEmail.innerHTML = data.school_email
+    ? `<a href="mailto:${data.school_email}">${data.school_email}</a>`
+    : '';
+}
+loadFooterContact();
 })();
