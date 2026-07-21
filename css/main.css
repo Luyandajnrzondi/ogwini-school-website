@@ -1143,7 +1143,11 @@ strong { color: var(--charcoal); }
   color: var(--white);
 }
 .cta-band h2 { color: var(--white); margin-bottom: 1rem; }
-.cta-band p { color: rgba(255,255,255,0.78); max-width: 50ch; margin-inline: auto 2rem; }
+.cta-band p {
+  color: rgba(255,255,255,0.78);
+  max-width: 50ch;
+  margin-inline: auto;
+}
 .cta-band .btn-row { justify-content: center; margin-top: 1.6rem; }
 
 .badge-row { display: flex; flex-wrap: wrap; gap: 2.2rem; align-items: center; }

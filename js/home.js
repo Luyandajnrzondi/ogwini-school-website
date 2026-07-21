@@ -42,6 +42,8 @@ async function loadHomepageContent() {
   var res = await supabase
     .from('homepage_content')
     .select('hero_title, hero_subtitle, welcome_message, principal_message')
+    .from('school_information')
+    .select('principal_name')
     .limit(1)
     .maybeSingle();
 
@@ -51,6 +53,7 @@ async function loadHomepageContent() {
   setText('home-hero-motto', c.hero_subtitle ? '\u201C' + c.hero_subtitle + '\u201D' : '');
   setText('home-hero-lede', c.welcome_message);
   setText('home-principal-message', c.principal_message);
+  if (s.principal_name) setText('home-principal-name', s.principal_name);
 }
 
 /* ---------- Statistics ---------- */
@@ -148,3 +151,4 @@ loadHomepageContent();
 loadStatistics();
 loadNews();
 loadEvents();
+loadSchoolInfo();
